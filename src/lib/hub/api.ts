@@ -192,6 +192,40 @@ export interface CreatePhotoInput {
 
 const PHOTOS_BUCKET = "photos";
 
+/* ---------------- Rate limit (client-side, por dispositivo) ---------------- */
+
+export const UPLOAD_DAILY_LIMIT = 10;
+const RATE_KEY = "panela.uploads.daily";
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function readRate(): { day: string; count: number } {
+  try {
+    const raw = localStorage.getItem(RATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { day: string; count: number };
+      if (parsed.day === todayKey()) return parsed;
+    }
+  } catch {}
+  return { day: todayKey(), count: 0 };
+}
+
+export function getUploadsRemaining(): number {
+  if (typeof window === "undefined") return UPLOAD_DAILY_LIMIT;
+  return Math.max(0, UPLOAD_DAILY_LIMIT - readRate().count);
+}
+
+function bumpRate() {
+  const cur = readRate();
+  const next = { day: cur.day, count: cur.count + 1 };
+  try {
+    localStorage.setItem(RATE_KEY, JSON.stringify(next));
+  } catch {}
+}
+
 /** Comprime a imagem no client (máx. 1600px, JPEG ~82%) para poupar Storage. */
 async function compressImage(file: File): Promise<Blob> {
   try {
@@ -216,6 +250,16 @@ async function compressImage(file: File): Promise<Blob> {
 }
 
 export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
+  // Rate-limit por dispositivo: 10 uploads/dia.
+  if (typeof window !== "undefined") {
+    const rate = readRate();
+    if (rate.count >= UPLOAD_DAILY_LIMIT) {
+      throw new Error(
+        `Limite diário atingido (${UPLOAD_DAILY_LIMIT} fotos por dia). Tente novamente amanhã.`,
+      );
+    }
+  }
+
   // 1) Upload real para o Supabase Storage (bucket público `photos`).
   const blob = await compressImage(input.file);
   const path = `${input.restaurantId}/${Date.now()}-${Math.random()
@@ -254,6 +298,7 @@ export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
     throw error ?? new Error("createPhoto failed");
   }
   notify();
+  bumpRate();
   return mapPhoto(data as PhotoRow);
 }
 
