@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { ArrowLeft, Camera, ImagePlus, Loader2, X } from "lucide-react";
@@ -59,7 +59,6 @@ function useLivePhotos(restaurantId: string | undefined): Photo[] {
 function EnviarPage() {
   const { restaurant } = Route.useLoaderData() as { restaurant: Restaurant | null };
   const search = useSearch({ from: "/$slug/enviar" });
-  const navigate = useNavigate();
 
   const photos = useLivePhotos(restaurant?.id);
 
