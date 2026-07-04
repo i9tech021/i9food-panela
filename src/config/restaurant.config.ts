@@ -5,7 +5,7 @@
  * Nada de conteúdo institucional deve viver fora daqui.
  */
 
-import heroCover from "@/assets/hero-panela-cover.webp.asset.json";
+import heroCover from "@/assets/hub-cover.webp.asset.json";
 import logo from "@/assets/logo-panela.png.asset.json";
 
 export interface OpeningHour {
