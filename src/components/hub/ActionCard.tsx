@@ -114,38 +114,53 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
 
   const inner = featured ? (
     <motion.div
-      whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 380, damping: 26 }}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 420, damping: 30 }}
       className={cn(
-        "group relative col-span-2 flex min-h-[128px] items-center gap-4 overflow-hidden rounded-2xl border border-[color:var(--copper)]/25 p-4",
-        "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_16%,var(--card))_0%,var(--card)_65%)]",
-        "shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)]",
+        "group relative col-span-2 flex min-h-[132px] items-center gap-4 overflow-hidden rounded-2xl border border-[color:var(--copper)]/30 p-4 will-change-transform",
+        "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_22%,var(--card))_0%,color-mix(in_oklab,var(--copper)_6%,var(--card))_55%,var(--card)_100%)]",
+        "shadow-[var(--shadow-soft)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]",
       )}
     >
-      {/* Halo animado */}
+      {/* Halo animado dourado */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-[color:var(--copper)]/20 blur-3xl opacity-70 transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-[color:var(--copper)]/25 blur-3xl opacity-80 transition-opacity duration-500 group-hover:opacity-100"
       />
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(120%_80%_at_0%_0%,color-mix(in_oklab,var(--copper)_18%,transparent),transparent_60%)]"
       />
-
+      {/* Press overlay — feedback imediato ao toque */}
       <span
-        className={cn(
-          "relative grid size-16 shrink-0 place-items-center rounded-2xl ring-1 transition-transform duration-300 group-hover:scale-105",
-          "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_28%,var(--card)),color-mix(in_oklab,var(--copper)_10%,var(--card)))]",
-          "ring-[color:var(--copper)]/35 shadow-[0_8px_24px_-12px_color-mix(in_oklab,var(--copper)_60%,transparent)]",
-        )}
-      >
-        <Icon className="size-7 text-[color:var(--copper)]" strokeWidth={1.6} />
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[color:var(--copper)]/10 opacity-0 transition-opacity duration-150 group-active:opacity-100"
+      />
+
+      {/* Ícone destacado com pulso sutil */}
+      <span className="relative shrink-0">
+        <span
+          aria-hidden
+          className="absolute inset-0 -m-1 rounded-2xl bg-[color:var(--copper)]/30 blur-md opacity-70 animate-pulse"
+        />
+        <span
+          className={cn(
+            "relative grid size-16 place-items-center rounded-2xl ring-1 transition-transform duration-300 group-hover:scale-[1.06]",
+            "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_45%,var(--card)),color-mix(in_oklab,var(--copper)_15%,var(--card)))]",
+            "ring-[color:var(--copper)]/45 shadow-[0_10px_28px_-10px_color-mix(in_oklab,var(--copper)_70%,transparent)]",
+          )}
+        >
+          <Icon className="size-7 text-[color:var(--copper)]" strokeWidth={1.6} />
+        </span>
       </span>
 
       <div className="relative min-w-0 flex-1">
-        <div className="type-label text-[color:var(--copper)]">Em destaque</div>
-        <div className="mt-1 font-display text-[17px] leading-tight text-primary">
+        <div className="flex items-center gap-1.5">
+          <span className="size-1 rounded-full bg-[color:var(--copper)]" />
+          <span className="type-label text-[color:var(--copper)]">Em destaque</span>
+        </div>
+        <div className="mt-1 font-display text-[18px] leading-tight text-primary">
           {action.label}
         </div>
         {action.description && (
@@ -159,9 +174,9 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
     <motion.div
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 380, damping: 26 }}
+      transition={{ type: "spring", stiffness: 420, damping: 30 }}
       className={cn(
-        "group relative flex h-full min-h-[116px] flex-col justify-between overflow-hidden rounded-2xl border border-border/70 bg-card p-3.5",
+        "group relative flex h-full min-h-[118px] flex-col justify-between overflow-hidden rounded-2xl border border-border/70 bg-card p-3.5 will-change-transform",
         "shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)] hover:border-border",
         accent.hoverBg,
       )}
@@ -174,10 +189,18 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
           accent.iconWrap,
         )}
       />
+      {/* Press overlay — feedback imediato */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-active:opacity-100",
+          accent.iconWrap,
+        )}
+      />
 
       <span
         className={cn(
-          "relative grid size-11 shrink-0 place-items-center rounded-xl ring-1 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3",
+          "relative grid size-11 shrink-0 place-items-center rounded-xl ring-1 transition-transform duration-300 group-hover:scale-110",
           accent.iconWrap,
           accent.ring,
         )}

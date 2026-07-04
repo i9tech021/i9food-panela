@@ -11,6 +11,7 @@ import { BrandMark } from "@/components/hub/BrandMark";
 import { HoursCard } from "@/components/hub/HoursCard";
 import { SideDrawer, useDrawer } from "@/components/hub/SideDrawer";
 import { BottomNav } from "@/components/hub/BottomNav";
+import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
   t: z.string().optional(),
@@ -62,8 +63,19 @@ function HomePage() {
   const search = useSearch({ from: "/$slug/" });
   const { open, openDrawer, closeDrawer } = useDrawer();
   const [mounted, setMounted] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      // Só aparece quando estiver no topo (≤ 24px)
+      setShowMenu(window.scrollY <= 24);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!restaurant) return;
@@ -95,12 +107,19 @@ function HomePage() {
 
   return (
     <main className="relative min-h-screen bg-background pb-24">
-      {/* Menu flutuante */}
+      {/* Menu flutuante — visível apenas no topo da página */}
       <button
         type="button"
         onClick={openDrawer}
         aria-label="Abrir menu"
-        className="fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md ring-1 ring-white/10 transition-colors hover:bg-black/65"
+        aria-hidden={!showMenu}
+        tabIndex={showMenu ? 0 : -1}
+        className={cn(
+          "fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md ring-1 ring-white/10 transition-all duration-300 hover:bg-black/65",
+          showMenu
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-3 pointer-events-none",
+        )}
       >
         <MenuBars />
       </button>
