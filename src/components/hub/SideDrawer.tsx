@@ -37,15 +37,19 @@ interface Item {
 }
 
 export function SideDrawer({ open, onClose, restaurant }: Props) {
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // foco inicial no botão fechar — a11y de teclado
+    const t = window.setTimeout(() => closeBtnRef.current?.focus(), 60);
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      window.clearTimeout(t);
     };
   }, [open, onClose]);
 
@@ -111,8 +115,9 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
               </div>
               <button
                 aria-label="Fechar menu"
+                ref={closeBtnRef}
                 onClick={onClose}
-                className="grid size-9 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                className="grid size-9 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/60"
               >
                 <X className="size-4" />
               </button>
@@ -129,7 +134,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
                         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] transition-colors",
                         item.soon
                           ? "text-white/40"
-                          : "text-white/90 hover:bg-white/10",
+                          : "text-white/90 hover:bg-white/10 group-focus-visible:bg-white/10 group-active:bg-white/15",
                       )}
                     >
                       <Icon
@@ -151,7 +156,11 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
                   if (item.soon) {
                     return (
                       <li key={item.key}>
-                        <button type="button" className="w-full text-left" disabled>
+                        <button
+                          type="button"
+                          className="w-full text-left focus-visible:outline-none"
+                          disabled
+                        >
                           {content}
                         </button>
                       </li>
@@ -165,7 +174,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
                           to={item.to}
                           params={{ slug: restaurant.slug }}
                           onClick={onClose}
-                          className="block"
+                          className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/60"
                         >
                           {content}
                         </Link>
@@ -179,7 +188,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={onClose}
-                        className="block"
+                        className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/60"
                       >
                         {content}
                       </a>
