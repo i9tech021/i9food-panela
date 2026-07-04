@@ -104,8 +104,10 @@ function EnviarPage() {
         tableCode: search.t ?? null,
         source: search.src,
       });
-      setRemaining(getUploadsRemaining());
-      navigate({ to: "/$slug", params: { slug: restaurant.slug } });
+        setRemaining(getUploadsRemaining());
+        setFile(null);
+        setCaption("");
+        setState("idle");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Falha ao publicar.");
       setState("idle");
