@@ -7,6 +7,8 @@ import { ArrowLeft, Camera, ImagePlus, Loader2, X } from "lucide-react";
 import {
   createPhoto,
   getRestaurantBySlug,
+  getUploadsRemaining,
+  UPLOAD_DAILY_LIMIT,
   listPhotos,
   subscribe,
 } from "@/lib/hub/api";
@@ -66,7 +68,13 @@ function EnviarPage() {
   const [author, setAuthor] = useState("");
   const [caption, setCaption] = useState("");
   const [state, setState] = useState<"idle" | "submitting">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [remaining, setRemaining] = useState<number>(UPLOAD_DAILY_LIMIT);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setRemaining(getUploadsRemaining());
+  }, []);
 
   useEffect(() => {
     if (!file) {
@@ -80,22 +88,29 @@ function EnviarPage() {
 
   if (!restaurant) return <NotFoundRestaurant />;
 
-  const canSubmit = !!file && state === "idle";
+  const canSubmit = !!file && state === "idle" && remaining > 0;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit || !file) return;
     setState("submitting");
-    await createPhoto({
-      restaurantId: restaurant.id,
-      file,
-      authorName: author,
-      caption,
-      tableCode: search.t ?? null,
-      source: search.src,
-    });
-    // Direto para o Hub — a foto já está publicada na galeria.
-    navigate({ to: "/$slug", params: { slug: restaurant.slug } });
+    setErrorMsg(null);
+    try {
+      await createPhoto({
+        restaurantId: restaurant.id,
+        file,
+        authorName: author,
+        caption,
+        tableCode: search.t ?? null,
+        source: search.src,
+      });
+      setRemaining(getUploadsRemaining());
+      navigate({ to: "/$slug", params: { slug: restaurant.slug } });
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Falha ao publicar.");
+      setState("idle");
+      setRemaining(getUploadsRemaining());
+    }
   };
 
   return (
@@ -214,6 +229,18 @@ function EnviarPage() {
         <p className="type-caption text-center">
           Ao publicar você concorda em exibir sua foto na galeria pública do Panela.
         </p>
+
+        <p className="type-caption text-center">
+          {remaining > 0
+            ? `Você ainda pode publicar ${remaining} ${remaining === 1 ? "foto" : "fotos"} hoje.`
+            : "Você atingiu o limite de 10 publicações hoje. Volte amanhã 🌱"}
+        </p>
+
+        {errorMsg && (
+          <p className="rounded-xl bg-destructive/10 px-4 py-3 text-center type-caption text-destructive">
+            {errorMsg}
+          </p>
+        )}
       </motion.form>
 
       {/* Galeria ao vivo abaixo do formulário */}
