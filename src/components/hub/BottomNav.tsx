@@ -30,8 +30,10 @@ export function BottomNav({ slug, active, onMore }: Props) {
               key={item.key}
               to={item.to}
               params={{ slug }}
+              aria-label={item.label}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] transition-colors",
+                "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-muted/50",
                 isActive ? "text-[color:var(--copper)]" : "text-muted-foreground hover:text-primary",
               )}
             >
@@ -46,8 +48,9 @@ export function BottomNav({ slug, active, onMore }: Props) {
         <button
           type="button"
           onClick={onMore}
+          aria-label="Abrir menu"
           className={cn(
-            "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] transition-colors",
+            "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-muted/50",
             active === "more" ? "text-[color:var(--copper)]" : "text-muted-foreground hover:text-primary",
           )}
         >
