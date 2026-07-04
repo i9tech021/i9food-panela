@@ -31,6 +31,32 @@ function notify() {
   listeners.forEach((l) => l());
 }
 
+/**
+ * Realtime: escuta INSERT/UPDATE/DELETE em `photos` no Supabase e chama o
+ * callback. Requer a tabela na publication `supabase_realtime`.
+ */
+export function subscribeRealtimePhotos(
+  restaurantId: string,
+  cb: () => void,
+): () => void {
+  const channel = supabase
+    .channel(`photos-${restaurantId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "photos",
+        filter: `restaurant_id=eq.${restaurantId}`,
+      },
+      () => cb(),
+    )
+    .subscribe();
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
 /* ---------------- Restaurants ---------------- */
 
 export async function getRestaurantBySlug(slug: string): Promise<Restaurant | null> {
@@ -164,9 +190,53 @@ export interface CreatePhotoInput {
   source?: TrafficSource;
 }
 
+const PHOTOS_BUCKET = "photos";
+
+/** Comprime a imagem no client (máx. 1600px, JPEG ~82%) para poupar Storage. */
+async function compressImage(file: File): Promise<Blob> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxSide = 1600;
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width * scale);
+    const h = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.82),
+    );
+    return blob ?? file;
+  } catch {
+    return file;
+  }
+}
+
 export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
-  // Sem Storage configurado ainda — mantém blob local como fallback.
-  const url = URL.createObjectURL(input.file);
+  // 1) Upload real para o Supabase Storage (bucket público `photos`).
+  const blob = await compressImage(input.file);
+  const path = `${input.restaurantId}/${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}.jpg`;
+
+  const { error: upErr } = await supabase.storage
+    .from(PHOTOS_BUCKET)
+    .upload(path, blob, { contentType: "image/jpeg", upsert: false });
+
+  if (upErr) {
+    console.warn("[api] createPhoto upload", upErr.message);
+    throw new Error(
+      `Falha no upload da foto: ${upErr.message}. Verifique o bucket "${PHOTOS_BUCKET}" e as policies de Storage.`,
+    );
+  }
+
+  const { data: pub } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path);
+  const url = pub.publicUrl;
+
+  // 2) Registro no banco.
   const { data, error } = await supabase
     .from("photos")
     .insert({
@@ -185,6 +255,41 @@ export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
   }
   notify();
   return mapPhoto(data as PhotoRow);
+}
+
+/** Senhas simples aceitas para apagar uma foto (case-insensitive). */
+const DELETE_PASSWORDS = ["clear", "ok"];
+
+export function isDeletePasswordValid(input: string): boolean {
+  return DELETE_PASSWORDS.includes(input.trim().toLowerCase());
+}
+
+export async function deletePhoto(id: string): Promise<void> {
+  // Busca a URL para tentar remover também o arquivo do Storage.
+  const { data } = await supabase
+    .from("photos")
+    .select("url")
+    .eq("id", id)
+    .maybeSingle();
+
+  const { error } = await supabase.from("photos").delete().eq("id", id);
+  if (error) {
+    console.warn("[api] deletePhoto", error.message);
+    throw new Error(`Não foi possível apagar: ${error.message}`);
+  }
+
+  const url = (data as { url?: string } | null)?.url;
+  const marker = `/object/public/${PHOTOS_BUCKET}/`;
+  if (url && url.includes(marker)) {
+    const path = decodeURIComponent(url.split(marker)[1] ?? "");
+    if (path) {
+      const { error: rmErr } = await supabase.storage
+        .from(PHOTOS_BUCKET)
+        .remove([path]);
+      if (rmErr) console.warn("[api] deletePhoto storage", rmErr.message);
+    }
+  }
+  notify();
 }
 
 export async function setPhotoStatus(id: string, status: PhotoStatus) {
