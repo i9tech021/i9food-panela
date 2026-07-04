@@ -42,6 +42,7 @@ export const Route = createFileRoute("/$slug/")({
     const desc =
       loaderData?.restaurant?.tagline ??
       "Comida de verdade, feita com tradição desde 1997.";
+    const hero = loaderData?.restaurant?.heroImage;
     return {
       meta: [
         { title: `${name} · Experience` },
@@ -49,7 +50,11 @@ export const Route = createFileRoute("/$slug/")({
         { property: "og:title", content: name },
         { property: "og:description", content: desc },
         { property: "og:type", content: "website" },
+        ...(hero ? [{ property: "og:image", content: hero }] : []),
       ],
+      links: hero
+        ? [{ rel: "preload", as: "image", href: hero, fetchpriority: "high" }]
+        : [],
     };
   },
   component: HomePage,
