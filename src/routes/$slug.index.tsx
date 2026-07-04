@@ -42,6 +42,7 @@ export const Route = createFileRoute("/$slug/")({
     const desc =
       loaderData?.restaurant?.tagline ??
       "Comida de verdade, feita com tradição desde 1997.";
+    const hero = loaderData?.restaurant?.heroImage;
     return {
       meta: [
         { title: `${name} · Experience` },
@@ -49,7 +50,11 @@ export const Route = createFileRoute("/$slug/")({
         { property: "og:title", content: name },
         { property: "og:description", content: desc },
         { property: "og:type", content: "website" },
+        ...(hero ? [{ property: "og:image", content: hero }] : []),
       ],
+      links: hero
+        ? [{ rel: "preload", as: "image", href: hero, fetchpriority: "high" }]
+        : [],
     };
   },
   component: HomePage,
@@ -112,10 +117,12 @@ function HomePage() {
         type="button"
         onClick={openDrawer}
         aria-label="Abrir menu"
+        aria-expanded={open}
+        aria-controls="site-menu-drawer"
         aria-hidden={!showMenu}
         tabIndex={showMenu ? 0 : -1}
         className={cn(
-          "fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md ring-1 ring-white/10 transition-all duration-300 hover:bg-black/65",
+          "fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md ring-1 ring-white/10 transition-all duration-300 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/70",
           showMenu
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-3 pointer-events-none",
