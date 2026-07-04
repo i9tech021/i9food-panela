@@ -1,15 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// Projeto Supabase EXTERNO (nqdaxllqjnxwxmglbghl) — valores hardcoded de
+// propósito: o .env deste projeto é gerenciado pelo Lovable Cloud e seria
+// sobrescrito. URL + anon key são públicas por design (protegidas por RLS).
+const SUPABASE_URL = "https://nqdaxllqjnxwxmglbghl.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xZGF4bGxxam54d3htZ2xiZ2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxOTM0MTUsImV4cCI6MjA5ODc2OTQxNX0.HRFtZWElV0fAOctfDpWGZkAvMwWIN0k_XORTnCQCIB0";
 
-if (!url || !anon) {
-  // eslint-disable-next-line no-console
-  console.warn(
-    "[external-supabase] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY não configurados.",
-  );
-}
-
-export const supabase = createClient(url ?? "http://localhost", anon ?? "anon", {
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
