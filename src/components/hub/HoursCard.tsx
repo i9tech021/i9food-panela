@@ -29,9 +29,19 @@ export function HoursCard({ restaurant, className }: Props) {
 
   // agrupa dias com mesmo horário
   const groups: Array<{ days: number[]; open: string; close: string }> = [];
-  for (const h of hours) {
+  // ordena começando pela segunda-feira (1..6, depois 0 = domingo)
+  const ordered = [...hours].sort((a, b) => {
+    const oa = a.day === 0 ? 7 : a.day;
+    const ob = b.day === 0 ? 7 : b.day;
+    return oa - ob;
+  });
+  for (const h of ordered) {
     const last = groups[groups.length - 1];
-    if (last && last.open === h.open && last.close === h.close && last.days[last.days.length - 1] === h.day - 1) {
+    const prev = last?.days[last.days.length - 1];
+    const isConsecutive =
+      prev !== undefined &&
+      ((h.day === prev + 1) || (prev === 6 && h.day === 0));
+    if (last && last.open === h.open && last.close === h.close && isConsecutive) {
       last.days.push(h.day);
     } else {
       groups.push({ days: [h.day], open: h.open, close: h.close });
