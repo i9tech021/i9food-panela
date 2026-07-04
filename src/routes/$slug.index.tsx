@@ -11,6 +11,7 @@ import { BrandMark } from "@/components/hub/BrandMark";
 import { HoursCard } from "@/components/hub/HoursCard";
 import { SideDrawer, useDrawer } from "@/components/hub/SideDrawer";
 import { BottomNav } from "@/components/hub/BottomNav";
+import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
   t: z.string().optional(),
