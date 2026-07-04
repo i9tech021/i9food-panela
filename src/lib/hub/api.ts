@@ -192,6 +192,40 @@ export interface CreatePhotoInput {
 
 const PHOTOS_BUCKET = "photos";
 
+/* ---------------- Rate limit (client-side, por dispositivo) ---------------- */
+
+export const UPLOAD_DAILY_LIMIT = 10;
+const RATE_KEY = "panela.uploads.daily";
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function readRate(): { day: string; count: number } {
+  try {
+    const raw = localStorage.getItem(RATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { day: string; count: number };
+      if (parsed.day === todayKey()) return parsed;
+    }
+  } catch {}
+  return { day: todayKey(), count: 0 };
+}
+
+export function getUploadsRemaining(): number {
+  if (typeof window === "undefined") return UPLOAD_DAILY_LIMIT;
+  return Math.max(0, UPLOAD_DAILY_LIMIT - readRate().count);
+}
+
+function bumpRate() {
+  const cur = readRate();
+  const next = { day: cur.day, count: cur.count + 1 };
+  try {
+    localStorage.setItem(RATE_KEY, JSON.stringify(next));
+  } catch {}
+}
+
 /** Comprime a imagem no client (máx. 1600px, JPEG ~82%) para poupar Storage. */
 async function compressImage(file: File): Promise<Blob> {
   try {
