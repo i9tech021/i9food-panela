@@ -250,6 +250,16 @@ async function compressImage(file: File): Promise<Blob> {
 }
 
 export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
+  // Rate-limit por dispositivo: 10 uploads/dia.
+  if (typeof window !== "undefined") {
+    const rate = readRate();
+    if (rate.count >= UPLOAD_DAILY_LIMIT) {
+      throw new Error(
+        `Limite diário atingido (${UPLOAD_DAILY_LIMIT} fotos por dia). Tente novamente amanhã.`,
+      );
+    }
+  }
+
   // 1) Upload real para o Supabase Storage (bucket público `photos`).
   const blob = await compressImage(input.file);
   const path = `${input.restaurantId}/${Date.now()}-${Math.random()
@@ -288,6 +298,7 @@ export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
     throw error ?? new Error("createPhoto failed");
   }
   notify();
+  bumpRate();
   return mapPhoto(data as PhotoRow);
 }
 
