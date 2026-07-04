@@ -28,30 +28,34 @@ const ICONS: Record<string, LucideIcon> = {
 
 const ACCENTS: Record<
   ActionAccent,
-  { iconWrap: string; icon: string; ring: string; glow: string; badge?: string }
+  { iconWrap: string; icon: string; ring: string; hoverBg: string; glow: string; badge?: string }
 > = {
   copper: {
     iconWrap: "bg-[color:var(--copper)]/12",
     icon: "text-[color:var(--copper)]",
     ring: "ring-[color:var(--copper)]/25",
+    hoverBg: "group-hover:bg-[color:var(--copper)]/6 group-active:bg-[color:var(--copper)]/10",
     glow: "shadow-[0_0_0_1px_color-mix(in_oklab,var(--copper)_15%,transparent)]",
   },
   maps: {
     iconWrap: "bg-[color:var(--maps)]/10",
     icon: "text-[color:var(--maps)]",
     ring: "ring-[color:var(--maps)]/20",
+    hoverBg: "group-hover:bg-[color:var(--maps)]/5 group-active:bg-[color:var(--maps)]/10",
     glow: "",
   },
   gold: {
     iconWrap: "bg-[color:var(--gold)]/25",
     icon: "text-[color:var(--wood)]",
     ring: "ring-[color:var(--gold)]/40",
+    hoverBg: "group-hover:bg-[color:var(--gold)]/8 group-active:bg-[color:var(--gold)]/14",
     glow: "",
   },
   "google-yellow": {
     iconWrap: "bg-[color:var(--google-yellow)]/25",
     icon: "text-[color:var(--google-yellow)]",
     ring: "ring-[color:var(--google-yellow)]/30",
+    hoverBg: "group-hover:bg-[color:var(--google-yellow)]/8 group-active:bg-[color:var(--google-yellow)]/14",
     glow: "",
   },
   instagram: {
@@ -59,30 +63,35 @@ const ACCENTS: Record<
       "bg-[linear-gradient(135deg,#feda75_0%,#fa7e1e_25%,#d62976_50%,#962fbf_75%,#4f5bd5_100%)]",
     icon: "text-white",
     ring: "ring-[color:var(--instagram)]/25",
+    hoverBg: "group-hover:bg-[color:var(--instagram)]/6 group-active:bg-[color:var(--instagram)]/12",
     glow: "",
   },
   whatsapp: {
     iconWrap: "bg-[color:var(--whatsapp)]/12",
     icon: "text-[color:var(--whatsapp)]",
     ring: "ring-[color:var(--whatsapp)]/25",
+    hoverBg: "group-hover:bg-[color:var(--whatsapp)]/6 group-active:bg-[color:var(--whatsapp)]/12",
     glow: "",
   },
   "jobs-blue": {
     iconWrap: "bg-[color:var(--jobs-blue)]/10",
     icon: "text-[color:var(--jobs-blue)]",
     ring: "ring-[color:var(--jobs-blue)]/20",
+    hoverBg: "group-hover:bg-[color:var(--jobs-blue)]/6 group-active:bg-[color:var(--jobs-blue)]/12",
     glow: "",
   },
   "events-orange": {
     iconWrap: "bg-[color:var(--events-orange)]/12",
     icon: "text-[color:var(--events-orange)]",
     ring: "ring-[color:var(--events-orange)]/25",
+    hoverBg: "group-hover:bg-[color:var(--events-orange)]/6 group-active:bg-[color:var(--events-orange)]/12",
     glow: "",
   },
   sage: {
     iconWrap: "bg-[color:var(--sage)]/12",
     icon: "text-[color:var(--sage)]",
     ring: "ring-[color:var(--sage)]/25",
+    hoverBg: "group-hover:bg-[color:var(--sage)]/6 group-active:bg-[color:var(--sage)]/12",
     glow: "",
   },
 };
@@ -103,54 +112,85 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
   const Icon = ICONS[action.icon] ?? Sparkles;
   const accent = ACCENTS[action.accent] ?? ACCENTS.copper;
 
-  const inner = (
+  const inner = featured ? (
     <motion.div
       whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 380, damping: 26 }}
+      className={cn(
+        "group relative col-span-2 flex min-h-[128px] items-center gap-4 overflow-hidden rounded-2xl border border-[color:var(--copper)]/25 p-4",
+        "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_16%,var(--card))_0%,var(--card)_65%)]",
+        "shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)]",
+      )}
+    >
+      {/* Halo animado */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-[color:var(--copper)]/20 blur-3xl opacity-70 transition-opacity duration-500 group-hover:opacity-100"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(120%_80%_at_0%_0%,color-mix(in_oklab,var(--copper)_18%,transparent),transparent_60%)]"
+      />
+
+      <span
+        className={cn(
+          "relative grid size-16 shrink-0 place-items-center rounded-2xl ring-1 transition-transform duration-300 group-hover:scale-105",
+          "bg-[linear-gradient(135deg,color-mix(in_oklab,var(--copper)_28%,var(--card)),color-mix(in_oklab,var(--copper)_10%,var(--card)))]",
+          "ring-[color:var(--copper)]/35 shadow-[0_8px_24px_-12px_color-mix(in_oklab,var(--copper)_60%,transparent)]",
+        )}
+      >
+        <Icon className="size-7 text-[color:var(--copper)]" strokeWidth={1.6} />
+      </span>
+
+      <div className="relative min-w-0 flex-1">
+        <div className="type-label text-[color:var(--copper)]">Em destaque</div>
+        <div className="mt-1 font-display text-[17px] leading-tight text-primary">
+          {action.label}
+        </div>
+        {action.description && (
+          <div className="mt-1 text-[12px] leading-snug text-muted-foreground">
+            {action.description}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  ) : (
+    <motion.div
+      whileHover={{ y: -2 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 380, damping: 26 }}
       className={cn(
-        "group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-border/70 bg-card p-3.5",
-        "shadow-[var(--shadow-soft)] transition-shadow hover:shadow-[var(--shadow-lift)]",
-        featured && "col-span-2 p-4",
+        "group relative flex h-full min-h-[116px] flex-col justify-between overflow-hidden rounded-2xl border border-border/70 bg-card p-3.5",
+        "shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)] hover:border-border",
+        accent.hoverBg,
       )}
     >
-      {/* Halo sutil no accent */}
+      {/* halo accent no hover */}
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-x-0 -top-16 h-24 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100",
+          "pointer-events-none absolute -right-8 -top-8 size-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-70",
           accent.iconWrap,
         )}
       />
 
       <span
         className={cn(
-          "relative grid shrink-0 place-items-center rounded-xl ring-1",
-          featured ? "size-14" : "size-10",
+          "relative grid size-11 shrink-0 place-items-center rounded-xl ring-1 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3",
           accent.iconWrap,
           accent.ring,
         )}
       >
-        <Icon
-          className={cn(featured ? "size-6" : "size-[18px]", accent.icon)}
-          strokeWidth={1.75}
-        />
+        <Icon className={cn("size-[20px]", accent.icon)} strokeWidth={1.7} />
       </span>
 
-      <div className="relative min-w-0 flex-1">
-        <div
-          className={cn(
-            "font-medium leading-tight text-primary",
-            featured ? "text-[15px]" : "text-[13.5px] line-clamp-2",
-          )}
-        >
+      <div className="relative mt-3 min-w-0">
+        <div className="font-medium leading-tight text-primary text-[13.5px] line-clamp-2">
           {action.label}
         </div>
         {action.description && (
-          <div className={cn(
-            "mt-0.5 text-[11px] leading-snug text-muted-foreground",
-            featured ? "" : "line-clamp-1",
-          )}>
+          <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground line-clamp-1">
             {action.description}
           </div>
         )}
@@ -166,7 +206,10 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
         to={action.internalTo}
         params={{ slug }}
         onClick={handleClick}
-        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
+        className={cn(
+          "block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl",
+          featured && "col-span-2",
+        )}
       >
         {inner}
       </Link>
@@ -179,7 +222,10 @@ export function ActionCard({ action, slug, onTrack, featured }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
+      className={cn(
+        "block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl",
+        featured && "col-span-2",
+      )}
     >
       {inner}
     </a>
