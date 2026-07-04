@@ -167,7 +167,7 @@ function HomePage() {
             hidden: {},
             visible: { transition: { staggerChildren: 0.045, delayChildren: 0.05 } },
           }}
-          className="grid grid-cols-2 gap-3"
+          className="grid auto-rows-fr grid-cols-2 gap-3"
         >
           {featured && (
             <ActionCardWrap>
