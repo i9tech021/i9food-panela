@@ -51,48 +51,44 @@ export function HoursCard({ restaurant, className }: Props) {
   return (
     <div
       className={cn(
-        "flex items-center gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-[var(--shadow-soft)]",
+        "flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3",
         className,
       )}
     >
-      <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[color:var(--copper)]/12 text-[color:var(--copper)]">
-        <Clock className="size-5" strokeWidth={1.75} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              "size-2 rounded-full",
-              open
-                ? "bg-[color:var(--whatsapp)] animate-pulse"
-                : "bg-muted-foreground/60",
-            )}
-            aria-hidden
-          />
-          <span className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-            {open ? "Aberto agora" : "Fechado agora"}
-          </span>
-        </div>
-        <div className="mt-1 space-y-0.5">
-          {groups.map((g, i) => {
-            const label =
-              g.days.length === 1
-                ? WEEKDAY_LABELS[g.days[0]]
-                : `${WEEKDAY_LABELS[g.days[0]]} a ${WEEKDAY_LABELS[g.days[g.days.length - 1]]}`;
-            return (
-              <div
-                key={i}
-                className="flex items-baseline justify-between gap-2 text-[13px] text-primary"
-              >
-                <span className="truncate">{label}</span>
-                <span className="tabular-nums text-muted-foreground">
-                  {g.open} — {g.close}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-1 text-[11px] text-muted-foreground">Almoço caseiro</div>
+      <Clock
+        className="size-4 shrink-0 text-muted-foreground"
+        strokeWidth={1.75}
+        aria-hidden
+      />
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <span
+          className={cn(
+            "size-1.5 shrink-0 rounded-full",
+            open
+              ? "bg-[color:var(--whatsapp)] animate-pulse"
+              : "bg-muted-foreground/60",
+          )}
+          aria-hidden
+        />
+        <span
+          className={cn(
+            "text-[11px] uppercase tracking-[0.22em]",
+            open ? "text-primary" : "text-muted-foreground",
+          )}
+        >
+          {open ? "Aberto" : "Fechado"}
+        </span>
+        <span className="truncate text-[12px] text-muted-foreground">
+          {groups
+            .map((g) => {
+              const label =
+                g.days.length === 1
+                  ? WEEKDAY_LABELS[g.days[0]]
+                  : `${WEEKDAY_LABELS[g.days[0]]}–${WEEKDAY_LABELS[g.days[g.days.length - 1]]}`;
+              return `${label} · ${g.open}–${g.close}`;
+            })
+            .join(" · ")}
+        </span>
       </div>
     </div>
   );
