@@ -5,8 +5,8 @@
  * Nada de conteúdo institucional deve viver fora daqui.
  */
 
-import heroCover from "@/assets/hub-cover.webp.asset.json";
-import logo from "@/assets/logo-panela.png.asset.json";
+const heroCover = "/hub-cover.webp";
+const logo = "/logo-panela.png";
 
 export interface OpeningHour {
   /** 0 = domingo, 1 = segunda, ... 6 = sábado */
@@ -70,8 +70,8 @@ export const RESTAURANT_CONFIG: RestaurantConfig = {
   },
 
   assets: {
-    hero: heroCover.url,
-    logo: logo.url,
+    hero: heroCover,
+    logo: logo,
   },
 
   openingHours: [
