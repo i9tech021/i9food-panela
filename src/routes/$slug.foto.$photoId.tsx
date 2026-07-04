@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Share2, Heart, Flame } from "lucide-react";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { ArrowLeft, Share2, Heart, Flame, Trash2, Loader2 } from "lucide-react";
 
-import { getRestaurantBySlug, listPhotos, reactToPhoto } from "@/lib/hub/api";
+import {
+  deletePhoto,
+  getRestaurantBySlug,
+  isDeletePasswordValid,
+  listPhotos,
+  reactToPhoto,
+} from "@/lib/hub/api";
 import type { Photo, Restaurant } from "@/lib/hub/types";
 import { NotFoundRestaurant } from "@/components/hub/NotFoundRestaurant";
 import { getReactions, setReactions } from "@/lib/hub/utils";
@@ -36,7 +42,12 @@ function FotoPage() {
     photo: Photo | null;
   };
   const router = useRouter();
+  const navigate = useNavigate();
   const [state, setState] = useState({ like: false, want: false, likes: 0, wants: 0 });
+  const [deleting, setDeleting] = useState(false);
+  const [askPass, setAskPass] = useState(false);
+  const [pass, setPass] = useState("");
+  const [passError, setPassError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!photo) return;
@@ -71,6 +82,23 @@ function FotoPage() {
       }
     } else {
       await navigator.clipboard.writeText(url);
+    }
+  };
+
+  const onDelete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isDeletePasswordValid(pass)) {
+      setPassError("Senha incorreta.");
+      return;
+    }
+    setPassError(null);
+    setDeleting(true);
+    try {
+      await deletePhoto(photo.id);
+      navigate({ to: "/$slug/galeria", params: { slug: restaurant.slug } });
+    } catch (err) {
+      setPassError(err instanceof Error ? err.message : "Erro ao apagar.");
+      setDeleting(false);
     }
   };
 
@@ -142,6 +170,58 @@ function FotoPage() {
         >
           Ver mais momentos
         </Link>
+
+        {/* Apagar foto — protegido por senha simples */}
+        <div className="mt-8 border-t border-border pt-5">
+          {!askPass ? (
+            <button
+              type="button"
+              onClick={() => setAskPass(true)}
+              className="mx-auto flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive"
+            >
+              <Trash2 className="size-3.5" /> Apagar esta foto
+            </button>
+          ) : (
+            <form onSubmit={onDelete} className="mx-auto max-w-xs space-y-2">
+              <input
+                type="password"
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+                placeholder="Senha para apagar"
+                autoFocus
+                className="w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-sm text-primary placeholder:text-muted-foreground/70 focus:border-destructive focus:outline-none"
+              />
+              {passError && (
+                <p className="text-center text-xs text-destructive">{passError}</p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAskPass(false);
+                    setPass("");
+                    setPassError(null);
+                  }}
+                  className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={deleting}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-destructive py-2.5 text-sm text-destructive-foreground disabled:opacity-60"
+                >
+                  {deleting ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-3.5" />
+                  )}
+                  Apagar
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </section>
     </main>
   );

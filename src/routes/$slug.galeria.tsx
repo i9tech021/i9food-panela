@@ -1,9 +1,13 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Camera } from "lucide-react";
 
-import { getRestaurantBySlug, listPhotos } from "@/lib/hub/api";
+import {
+  getRestaurantBySlug,
+  listPhotos,
+  subscribeRealtimePhotos,
+} from "@/lib/hub/api";
 import type { Photo, Restaurant } from "@/lib/hub/types";
 import { NotFoundRestaurant } from "@/components/hub/NotFoundRestaurant";
 import { BottomNav } from "@/components/hub/BottomNav";
@@ -41,6 +45,16 @@ function GaleriaPage() {
   };
   const { open, openDrawer, closeDrawer } = useDrawer();
   const [filter, setFilter] = useState<FilterKey>("recentes");
+  const router = useRouter();
+
+  // Tempo real: qualquer foto nova/apagada/atualizada recarrega a galeria.
+  useEffect(() => {
+    if (!restaurant) return;
+    const unsub = subscribeRealtimePhotos(restaurant.id, () => {
+      router.invalidate();
+    });
+    return unsub;
+  }, [restaurant?.id]);
 
   const visible = useMemo(() => {
     if (!photos.length) return [] as Photo[];
