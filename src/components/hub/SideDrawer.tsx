@@ -83,6 +83,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
           />
           <motion.aside
             key="drawer"
+            id="site-menu-drawer"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
