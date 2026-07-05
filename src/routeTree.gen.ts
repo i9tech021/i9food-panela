@@ -22,6 +22,7 @@ import { Route as SlugAdminRouteImport } from './routes/$slug.admin'
 import { Route as SlugAdminIndexRouteImport } from './routes/$slug.admin.index'
 import { Route as SlugFotoPhotoIdRouteImport } from './routes/$slug.foto.$photoId'
 import { Route as SlugAdminModeracaoRouteImport } from './routes/$slug.admin.moderacao'
+import { Route as SlugAdminLoginRouteImport } from './routes/$slug.admin.login'
 import { Route as SlugAdminConteudoRouteImport } from './routes/$slug.admin.conteudo'
 import { Route as SlugAdminConfigRouteImport } from './routes/$slug.admin.config'
 
@@ -90,6 +91,11 @@ const SlugAdminModeracaoRoute = SlugAdminModeracaoRouteImport.update({
   path: '/moderacao',
   getParentRoute: () => SlugAdminRoute,
 } as any)
+const SlugAdminLoginRoute = SlugAdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => SlugAdminRoute,
+} as any)
 const SlugAdminConteudoRoute = SlugAdminConteudoRouteImport.update({
   id: '/conteudo',
   path: '/conteudo',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin/': typeof SlugAdminIndexRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/$slug': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin': typeof SlugAdminIndexRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin/': typeof SlugAdminIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
     | '/$slug/admin/'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
     | '/$slug/admin'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
     | '/$slug/admin/'
@@ -301,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugAdminModeracaoRouteImport
       parentRoute: typeof SlugAdminRoute
     }
+    '/$slug/admin/login': {
+      id: '/$slug/admin/login'
+      path: '/login'
+      fullPath: '/$slug/admin/login'
+      preLoaderRoute: typeof SlugAdminLoginRouteImport
+      parentRoute: typeof SlugAdminRoute
+    }
     '/$slug/admin/conteudo': {
       id: '/$slug/admin/conteudo'
       path: '/conteudo'
@@ -321,6 +340,7 @@ declare module '@tanstack/react-router' {
 interface SlugAdminRouteChildren {
   SlugAdminConfigRoute: typeof SlugAdminConfigRoute
   SlugAdminConteudoRoute: typeof SlugAdminConteudoRoute
+  SlugAdminLoginRoute: typeof SlugAdminLoginRoute
   SlugAdminModeracaoRoute: typeof SlugAdminModeracaoRoute
   SlugAdminIndexRoute: typeof SlugAdminIndexRoute
 }
@@ -328,6 +348,7 @@ interface SlugAdminRouteChildren {
 const SlugAdminRouteChildren: SlugAdminRouteChildren = {
   SlugAdminConfigRoute: SlugAdminConfigRoute,
   SlugAdminConteudoRoute: SlugAdminConteudoRoute,
+  SlugAdminLoginRoute: SlugAdminLoginRoute,
   SlugAdminModeracaoRoute: SlugAdminModeracaoRoute,
   SlugAdminIndexRoute: SlugAdminIndexRoute,
 }
