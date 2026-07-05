@@ -8,5 +8,7 @@ const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xZGF4bGxxam54d3htZ2xiZ2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxOTM0MTUsImV4cCI6MjA5ODc2OTQxNX0.HRFtZWElV0fAOctfDpWGZkAvMwWIN0k_XORTnCQCIB0";
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false },
+  // Persistência ligada para permitir login admin (Supabase Auth) sem
+  // afetar leituras anon protegidas por RLS.
+  auth: { persistSession: true, autoRefreshToken: true },
 });
