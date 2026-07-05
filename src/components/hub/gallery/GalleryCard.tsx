@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import type { Photo } from "@/lib/hub/types";
 import { cn } from "@/lib/utils";
+import { getReactions, setReactions } from "@/lib/hub/utils";
+import { reactToPhoto } from "@/lib/hub/api";
 
 interface Props {
   photo: Photo;
@@ -16,6 +20,32 @@ interface Props {
  * chegar — nenhum consumidor sabe como o card monta a URL de detalhe.
  */
 export function GalleryCard({ photo, slug, priority, className }: Props) {
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(photo.likes);
+
+  useEffect(() => {
+    const r = getReactions()[photo.id] ?? {};
+    setLiked(!!r.like);
+  }, [photo.id]);
+
+  useEffect(() => {
+    setLikes(photo.likes);
+  }, [photo.likes]);
+
+  const toggleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const map = getReactions();
+    const cur = map[photo.id] ?? {};
+    const wasOn = !!cur.like;
+    map[photo.id] = { ...cur, like: !wasOn };
+    setReactions(map);
+    const delta = wasOn ? -1 : 1;
+    setLiked(!wasOn);
+    setLikes((n) => n + delta);
+    await reactToPhoto(photo.id, "like", delta as 1 | -1);
+  };
+
   return (
     <motion.div
       whileHover={{ y: -2 }}
@@ -27,7 +57,7 @@ export function GalleryCard({ photo, slug, priority, className }: Props) {
         params={{ slug, photoId: photo.id }}
         className="block overflow-hidden rounded-2xl bg-muted shadow-[var(--shadow-soft)] ring-1 ring-border/60 transition-shadow hover:shadow-[var(--shadow-lift)]"
       >
-        <div className="relative aspect-[4/5] w-full overflow-hidden">
+        <div className="relative aspect-square w-full overflow-hidden">
           <img
             src={photo.url}
             alt={photo.caption ?? "Momento no Panela"}
@@ -44,6 +74,19 @@ export function GalleryCard({ photo, slug, priority, className }: Props) {
               Destaque
             </span>
           )}
+          <button
+            type="button"
+            onClick={toggleLike}
+            aria-label={liked ? "Descurtir" : "Curtir"}
+            aria-pressed={liked}
+            className={cn(
+              "absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-1 text-[11px] font-medium text-[color:var(--cream)] backdrop-blur transition-colors",
+              liked && "text-[color:var(--terracotta)]",
+            )}
+          >
+            <Heart className={cn("size-3.5", liked && "fill-current")} />
+            {likes > 0 && <span className="tabular-nums">{likes}</span>}
+          </button>
         </div>
         {(photo.authorName || photo.caption) && (
           <div className="px-3 py-2.5">
