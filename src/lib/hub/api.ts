@@ -356,7 +356,7 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
     .maybeSingle();
   if (error || !data) {
     console.warn("[api] reactToPhoto read", error?.message);
-    return;
+    throw error ?? new Error("reactToPhoto read failed");
   }
   const current = ((data as Record<string, number | null>)[col] ?? 0) as number;
   const next = Math.max(0, current + delta);
@@ -364,7 +364,10 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
     .from("photos")
     .update({ [col]: next })
     .eq("id", id);
-  if (updErr) console.warn("[api] reactToPhoto write", updErr.message);
+  if (updErr) {
+    console.warn("[api] reactToPhoto write", updErr.message);
+    throw updErr;
+  }
   notify();
 }
 
