@@ -1,19 +1,33 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   ImageIcon,
   Sparkles,
   Settings,
   ExternalLink,
+  Briefcase,
+  CalendarCheck,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Restaurant } from "@/lib/hub/types";
+import { adminSignOut, useAdminSession } from "@/lib/hub/admin-auth";
 
-const NAV: { label: string; to: "/$slug/admin" | "/$slug/admin/moderacao" | "/$slug/admin/conteudo" | "/$slug/admin/config"; icon: LucideIcon; keyMatch: string }[] = [
+type AdminRoute =
+  | "/$slug/admin"
+  | "/$slug/admin/moderacao"
+  | "/$slug/admin/curriculos"
+  | "/$slug/admin/reservas"
+  | "/$slug/admin/conteudo"
+  | "/$slug/admin/config";
+
+const NAV: { label: string; to: AdminRoute; icon: LucideIcon; keyMatch: string }[] = [
   { label: "Visão geral", to: "/$slug/admin", icon: LayoutDashboard, keyMatch: "admin-home" },
   { label: "Moderação", to: "/$slug/admin/moderacao", icon: ImageIcon, keyMatch: "/moderacao" },
+  { label: "Currículos", to: "/$slug/admin/curriculos", icon: Briefcase, keyMatch: "/curriculos" },
+  { label: "Reservas", to: "/$slug/admin/reservas", icon: CalendarCheck, keyMatch: "/reservas" },
   { label: "Conteúdo", to: "/$slug/admin/conteudo", icon: Sparkles, keyMatch: "/conteudo" },
   { label: "Configurações", to: "/$slug/admin/config", icon: Settings, keyMatch: "/config" },
 ];
@@ -30,9 +44,16 @@ export function AdminShell({
   action?: React.ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const { email } = useAdminSession();
   const isActive = (match: string) => {
     if (match === "admin-home") return pathname === `/${restaurant.slug}/admin`;
     return pathname.includes(match);
+  };
+
+  const handleSignOut = async () => {
+    await adminSignOut();
+    navigate({ to: "/$slug/admin/login", params: { slug: restaurant.slug }, replace: true });
   };
 
   return (
@@ -80,6 +101,17 @@ export function AdminShell({
             >
               Ver Hub <ExternalLink className="size-3" />
             </Link>
+            {email && (
+              <div className="mt-4 space-y-2">
+                <div className="truncate text-[10px] text-muted-foreground">{email}</div>
+                <button
+                  onClick={handleSignOut}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="size-3" /> Sair
+                </button>
+              </div>
+            )}
           </div>
         </aside>
 
