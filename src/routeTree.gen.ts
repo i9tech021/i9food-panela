@@ -13,6 +13,7 @@ import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
 import { Route as SlugTrabalheConoscoRouteImport } from './routes/$slug.trabalhe-conosco'
+import { Route as SlugReservasRouteImport } from './routes/$slug.reservas'
 import { Route as SlugGaleriaRouteImport } from './routes/$slug.galeria'
 import { Route as SlugEventosRouteImport } from './routes/$slug.eventos'
 import { Route as SlugEnviarRouteImport } from './routes/$slug.enviar'
@@ -42,6 +43,11 @@ const SlugIndexRoute = SlugIndexRouteImport.update({
 const SlugTrabalheConoscoRoute = SlugTrabalheConoscoRouteImport.update({
   id: '/trabalhe-conosco',
   path: '/trabalhe-conosco',
+  getParentRoute: () => SlugRoute,
+} as any)
+const SlugReservasRoute = SlugReservasRouteImport.update({
+  id: '/reservas',
+  path: '/reservas',
   getParentRoute: () => SlugRoute,
 } as any)
 const SlugGaleriaRoute = SlugGaleriaRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/reservas': typeof SlugReservasRoute
   '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/reservas': typeof SlugReservasRoute
   '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/reservas': typeof SlugReservasRoute
   '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/reservas'
     | '/$slug/trabalhe-conosco'
     | '/$slug/'
     | '/$slug/admin/config'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/reservas'
     | '/$slug/trabalhe-conosco'
     | '/$slug'
     | '/$slug/admin/config'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/reservas'
     | '/$slug/trabalhe-conosco'
     | '/$slug/'
     | '/$slug/admin/config'
@@ -224,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/trabalhe-conosco'
       fullPath: '/$slug/trabalhe-conosco'
       preLoaderRoute: typeof SlugTrabalheConoscoRouteImport
+      parentRoute: typeof SlugRoute
+    }
+    '/$slug/reservas': {
+      id: '/$slug/reservas'
+      path: '/reservas'
+      fullPath: '/$slug/reservas'
+      preLoaderRoute: typeof SlugReservasRouteImport
       parentRoute: typeof SlugRoute
     }
     '/$slug/galeria': {
@@ -323,6 +342,7 @@ interface SlugRouteChildren {
   SlugEnviarRoute: typeof SlugEnviarRoute
   SlugEventosRoute: typeof SlugEventosRoute
   SlugGaleriaRoute: typeof SlugGaleriaRoute
+  SlugReservasRoute: typeof SlugReservasRoute
   SlugTrabalheConoscoRoute: typeof SlugTrabalheConoscoRoute
   SlugIndexRoute: typeof SlugIndexRoute
   SlugFotoPhotoIdRoute: typeof SlugFotoPhotoIdRoute
@@ -334,6 +354,7 @@ const SlugRouteChildren: SlugRouteChildren = {
   SlugEnviarRoute: SlugEnviarRoute,
   SlugEventosRoute: SlugEventosRoute,
   SlugGaleriaRoute: SlugGaleriaRoute,
+  SlugReservasRoute: SlugReservasRoute,
   SlugTrabalheConoscoRoute: SlugTrabalheConoscoRoute,
   SlugIndexRoute: SlugIndexRoute,
   SlugFotoPhotoIdRoute: SlugFotoPhotoIdRoute,
