@@ -60,13 +60,13 @@ export const RESTAURANT_CONFIG: RestaurantConfig = {
   address: "Panela da Roça · Restaurante & Churrascaria",
   city: "Centro",
 
-  whatsappPhone: "5522998454932",
-  instagramHandle: "paneladaroca",
+  whatsappPhone: "5522999454932",
+  instagramHandle: "restaurantepaneladaroca",
 
   urls: {
     maps: "https://share.google/FSXuEZVrQ0aFkgA5y",
-    googleReview: "https://share.google/DXVlJd8pw0RKANcLR",
-    instagram: "https://instagram.com/paneladaroca",
+    googleReview: "https://share.google/x204jozrqDB2mMx2T",
+    instagram: "https://instagram.com/restaurantepaneladaroca",
   },
 
   assets: {
