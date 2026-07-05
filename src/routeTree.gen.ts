@@ -23,6 +23,7 @@ import { Route as SlugAdminIndexRouteImport } from './routes/$slug.admin.index'
 import { Route as SlugFotoPhotoIdRouteImport } from './routes/$slug.foto.$photoId'
 import { Route as SlugAdminModeracaoRouteImport } from './routes/$slug.admin.moderacao'
 import { Route as SlugAdminLoginRouteImport } from './routes/$slug.admin.login'
+import { Route as SlugAdminCurriculosRouteImport } from './routes/$slug.admin.curriculos'
 import { Route as SlugAdminConteudoRouteImport } from './routes/$slug.admin.conteudo'
 import { Route as SlugAdminConfigRouteImport } from './routes/$slug.admin.config'
 
@@ -96,6 +97,11 @@ const SlugAdminLoginRoute = SlugAdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => SlugAdminRoute,
 } as any)
+const SlugAdminCurriculosRoute = SlugAdminCurriculosRouteImport.update({
+  id: '/curriculos',
+  path: '/curriculos',
+  getParentRoute: () => SlugAdminRoute,
+} as any)
 const SlugAdminConteudoRoute = SlugAdminConteudoRouteImport.update({
   id: '/conteudo',
   path: '/conteudo',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/$slug': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
+  '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
+    | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
     | '/$slug/foto/$photoId'
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugAdminLoginRouteImport
       parentRoute: typeof SlugAdminRoute
     }
+    '/$slug/admin/curriculos': {
+      id: '/$slug/admin/curriculos'
+      path: '/curriculos'
+      fullPath: '/$slug/admin/curriculos'
+      preLoaderRoute: typeof SlugAdminCurriculosRouteImport
+      parentRoute: typeof SlugAdminRoute
+    }
     '/$slug/admin/conteudo': {
       id: '/$slug/admin/conteudo'
       path: '/conteudo'
@@ -340,6 +359,7 @@ declare module '@tanstack/react-router' {
 interface SlugAdminRouteChildren {
   SlugAdminConfigRoute: typeof SlugAdminConfigRoute
   SlugAdminConteudoRoute: typeof SlugAdminConteudoRoute
+  SlugAdminCurriculosRoute: typeof SlugAdminCurriculosRoute
   SlugAdminLoginRoute: typeof SlugAdminLoginRoute
   SlugAdminModeracaoRoute: typeof SlugAdminModeracaoRoute
   SlugAdminIndexRoute: typeof SlugAdminIndexRoute
@@ -348,6 +368,7 @@ interface SlugAdminRouteChildren {
 const SlugAdminRouteChildren: SlugAdminRouteChildren = {
   SlugAdminConfigRoute: SlugAdminConfigRoute,
   SlugAdminConteudoRoute: SlugAdminConteudoRoute,
+  SlugAdminCurriculosRoute: SlugAdminCurriculosRoute,
   SlugAdminLoginRoute: SlugAdminLoginRoute,
   SlugAdminModeracaoRoute: SlugAdminModeracaoRoute,
   SlugAdminIndexRoute: SlugAdminIndexRoute,
