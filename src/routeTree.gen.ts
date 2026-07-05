@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
+import { Route as SlugTrabalheConoscoRouteImport } from './routes/$slug.trabalhe-conosco'
 import { Route as SlugGaleriaRouteImport } from './routes/$slug.galeria'
 import { Route as SlugEventosRouteImport } from './routes/$slug.eventos'
 import { Route as SlugEnviarRouteImport } from './routes/$slug.enviar'
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
 const SlugIndexRoute = SlugIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => SlugRoute,
+} as any)
+const SlugTrabalheConoscoRoute = SlugTrabalheConoscoRouteImport.update({
+  id: '/trabalhe-conosco',
+  path: '/trabalhe-conosco',
   getParentRoute: () => SlugRoute,
 } as any)
 const SlugGaleriaRoute = SlugGaleriaRouteImport.update({
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/$slug/enviar': typeof SlugEnviarRoute
   '/$slug/eventos': typeof SlugEventosRoute
   '/$slug/galeria': typeof SlugGaleriaRoute
+  '/$slug/trabalhe-conosco': typeof SlugTrabalheConoscoRoute
   '/$slug/': typeof SlugIndexRoute
   '/$slug/admin/config': typeof SlugAdminConfigRoute
   '/$slug/admin/conteudo': typeof SlugAdminConteudoRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/trabalhe-conosco'
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/trabalhe-conosco'
     | '/$slug'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/$slug/enviar'
     | '/$slug/eventos'
     | '/$slug/galeria'
+    | '/$slug/trabalhe-conosco'
     | '/$slug/'
     | '/$slug/admin/config'
     | '/$slug/admin/conteudo'
@@ -205,6 +217,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/$slug/'
       preLoaderRoute: typeof SlugIndexRouteImport
+      parentRoute: typeof SlugRoute
+    }
+    '/$slug/trabalhe-conosco': {
+      id: '/$slug/trabalhe-conosco'
+      path: '/trabalhe-conosco'
+      fullPath: '/$slug/trabalhe-conosco'
+      preLoaderRoute: typeof SlugTrabalheConoscoRouteImport
       parentRoute: typeof SlugRoute
     }
     '/$slug/galeria': {
@@ -304,6 +323,7 @@ interface SlugRouteChildren {
   SlugEnviarRoute: typeof SlugEnviarRoute
   SlugEventosRoute: typeof SlugEventosRoute
   SlugGaleriaRoute: typeof SlugGaleriaRoute
+  SlugTrabalheConoscoRoute: typeof SlugTrabalheConoscoRoute
   SlugIndexRoute: typeof SlugIndexRoute
   SlugFotoPhotoIdRoute: typeof SlugFotoPhotoIdRoute
 }
@@ -314,6 +334,7 @@ const SlugRouteChildren: SlugRouteChildren = {
   SlugEnviarRoute: SlugEnviarRoute,
   SlugEventosRoute: SlugEventosRoute,
   SlugGaleriaRoute: SlugGaleriaRoute,
+  SlugTrabalheConoscoRoute: SlugTrabalheConoscoRoute,
   SlugIndexRoute: SlugIndexRoute,
   SlugFotoPhotoIdRoute: SlugFotoPhotoIdRoute,
 }
