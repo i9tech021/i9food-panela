@@ -86,7 +86,7 @@
   --jobs-blue: oklch(0.55 0.10 240);
   --events-orange: oklch(0.68 0.16 55);
 
-  --background: oklch(0.915 0.02 72);
+  --background: oklch(0.89 0.022 72);
   --foreground: oklch(0.22 0.025 55);
   --card: oklch(0.955 0.014 78);
   --card-foreground: oklch(0.22 0.025 55);
