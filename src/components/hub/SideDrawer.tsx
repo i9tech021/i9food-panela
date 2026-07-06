@@ -207,7 +207,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
               <div className="mt-1 text-[10px] uppercase tracking-[0.28em] text-white/45">
                 Powered by{" "}
                 <a
-                  href="https://wa.me/5521998351729"
+                  href="https://wa.me/5521998351729?text=Ol%C3%A1%21%20Gostei%20muito%20da%20aplica%C3%A7%C3%A3o%20do%20Panela%20da%20Ro%C3%A7a%20e%20gostaria%20de%20saber%20mais%20sobre%20o%20i9%20Food%20OS."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[color:var(--gold)] normal-case tracking-normal font-medium hover:underline"
