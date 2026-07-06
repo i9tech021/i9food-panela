@@ -226,11 +226,18 @@ function bumpRate() {
   } catch {}
 }
 
-/** Comprime a imagem no client (máx. 1600px, JPEG ~82%) para poupar Storage. */
+/**
+ * Redimensiona sem cortar (mantém proporção original) para no máximo
+ * 2400px no lado maior, exportando JPEG ~92% (alta qualidade).
+ * Arquivos até ~3MB são enviados sem reprocessar para preservar o original.
+ */
 async function compressImage(file: File): Promise<Blob> {
   try {
+    // Se já é pequeno, envia como veio (preserva qualidade original).
+    if (file.size <= 3 * 1024 * 1024) return file;
+
     const bitmap = await createImageBitmap(file);
-    const maxSide = 1600;
+    const maxSide = 2400;
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const w = Math.round(bitmap.width * scale);
     const h = Math.round(bitmap.height * scale);
@@ -239,9 +246,11 @@ async function compressImage(file: File): Promise<Blob> {
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) return file;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.drawImage(bitmap, 0, 0, w, h);
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", 0.82),
+      canvas.toBlob(resolve, "image/jpeg", 0.92),
     );
     return blob ?? file;
   } catch {
