@@ -14,3 +14,19 @@ Auditoria congelada do estado atual do projeto. Nada aqui inventa funcionalidade
 10. [Roadmap](./10-roadmap.md)
 
 Handoff resumido: [`../HANDOFF.md`](../HANDOFF.md).
+
+---
+
+## Novos (auditoria 2026-07-06)
+
+Reescrita em andamento (ver mensagem de auditoria). Já commitado:
+
+- [`database/`](./database/README.md) — schema real versionado do
+  projeto Supabase externo (`0000_baseline.sql`).
+- [`adr/`](./adr/README.md) — Architecture Decision Records.
+  - [ADR-001 — Dois projetos Supabase](./adr/ADR-001-dual-supabase-client.md)
+
+> Os arquivos numerados `01-…10` refletem a auditoria original e estão
+> **parcialmente desatualizados** (ver mensagem prévia). Serão
+> substituídos pela nova estrutura (`ARCHITECTURE.md`, `DATABASE.md`,
+> `SECURITY.md`, etc.) nos próximos passos.
