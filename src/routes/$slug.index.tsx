@@ -216,7 +216,7 @@ function HomePage() {
           <div className="mt-2 type-label text-muted-foreground">
             Powered by{" "}
             <a
-              href="https://wa.me/5521998351729"
+              href="https://wa.me/5521998351729?text=Ol%C3%A1%21%20Gostei%20muito%20da%20aplica%C3%A7%C3%A3o%20do%20Panela%20da%20Ro%C3%A7a%20e%20gostaria%20de%20saber%20mais%20sobre%20o%20i9%20Food%20OS."
               target="_blank"
               rel="noopener noreferrer"
               className="type-button text-[color:var(--copper)] normal-case tracking-normal hover:underline"
