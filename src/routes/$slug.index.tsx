@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, redirect, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { z } from "zod";
 
@@ -215,10 +215,22 @@ function HomePage() {
           </div>
           <div className="mt-2 type-label text-muted-foreground">
             Powered by{" "}
-            <span className="type-button text-[color:var(--copper)] normal-case tracking-normal">
+            <a
+              href="https://wa.me/5521998351729"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="type-button text-[color:var(--copper)] normal-case tracking-normal hover:underline"
+            >
               i9 Food OS
-            </span>
+            </a>
           </div>
+          <Link
+            to="/$slug/admin"
+            params={{ slug: restaurant.slug }}
+            className="mt-2 text-[10px] uppercase tracking-[0.28em] text-muted-foreground/50 hover:text-[color:var(--copper)] transition-colors"
+          >
+            Admin
+          </Link>
         </footer>
       </section>
 

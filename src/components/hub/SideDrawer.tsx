@@ -205,7 +205,15 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
                 Desde 1997 criando momentos ao redor da mesa.
               </div>
               <div className="mt-1 text-[10px] uppercase tracking-[0.28em] text-white/45">
-                Powered by <span className="text-[color:var(--gold)] normal-case tracking-normal font-medium">i9 Food OS</span>
+                Powered by{" "}
+                <a
+                  href="https://wa.me/5521998351729"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[color:var(--gold)] normal-case tracking-normal font-medium hover:underline"
+                >
+                  i9 Food OS
+                </a>
               </div>
             </div>
           </motion.aside>
