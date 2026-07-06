@@ -1,24 +1,54 @@
-# 7. Estrutura preparada para Backend
+# 7. Camada de Dados (estado atual)
 
-A camada de dados foi isolada em `src/lib/hub/` justamente para trocar a implementação sem refactor de UI. Cada função exportada em `api.ts` tem assinatura async, aceita `restaurantId`/`slug` e devolve tipos definidos em `types.ts` — exatamente o shape que a Supabase (via `@supabase/supabase-js`) deverá satisfazer.
+> Reescrito em 2026-07-06. **A camada não é mais mock** — está sobre
+> Supabase real. O documento antigo descrevia o estado pré-integração;
+> ficou obsoleto quando `src/lib/hub/api.ts` migrou para o projeto
+> externo `nqdaxllqjnxwxmglbghl`.
+>
+> Contexto arquitetural: `docs/adr/ADR-001-dual-supabase-client.md`.
+> Schema completo: `docs/database/0000_baseline.sql`.
 
-## O que hoje é mock
+## Onde os dados vivem hoje
 
-| Área | Arquivo(s) | Como é mockado | Como conectar ao backend |
-| --- | --- | --- | --- |
-| Restaurante (tenant) | `api.ts#getRestaurantBySlug`, `updateRestaurant`; `seed.ts#SEED_RESTAURANTS`; `config/restaurant.config.ts` | Array em memória hidratado no seed | Tabela `restaurants` (slug único). SELECT por slug, RLS pública leitura, escrita admin. |
-| Fotos (galeria + moderação) | `api.ts#listPhotos, createPhoto, setPhotoStatus, reactToPhoto`; `PhotoTile`, `GalleryGrid`, `$slug.enviar.tsx`, `$slug.foto.$photoId.tsx`, `$slug.admin.moderacao.tsx` | Array + `URL.createObjectURL` para o arquivo | Tabela `photos` + Storage bucket público. Signed uploads no client. RLS: read `approved|featured` público, write autor, update admin. |
-| Likes / Quero | `reactToPhoto` (incrementa contador na foto) | Contadores in-place | Tabela `photo_reactions (photo_id, user_id/anon_id, kind)` com counters via view ou trigger. |
-| Links / Action Cards | `api.ts#listLinks, updateLink`; `seed.ts#SEED_LINKS`; `ActionCard`, `$slug.index.tsx`, `$slug.admin.conteudo.tsx` | Array + persist localStorage | Tabela `hub_actions` (order, accent, kind, href, enabled). Leitura pública, escrita admin. |
-| Eventos | `api.ts#listEvents`; `seed.ts#SEED_EVENTS`; `$slug.eventos.tsx` | Array vazio no seed | Tabela `events` (date, title, description, image). |
-| Analytics | `api.ts#trackEvent, listAnalytics`; dashboard admin | Últimos 5000 eventos em localStorage | Tabela `analytics_events` append-only + edge function/RPC para dashboards. |
-| Config restaurante (edição) | `$slug.admin.config.tsx` → `updateRestaurant` | Patch in-place | UPDATE na tabela `restaurants` com política admin. |
-| Admin (auth) | Nenhuma proteção | Rota pública | Supabase Auth + tabela `user_roles` (`admin`) + gate `_authenticated`. |
-| WhatsApp / mensagens | `lib/hub/whatsapp.ts` | Strings construídas no client | Manter no client — não requer backend. |
-| Upload storage | `createPhoto` → `URL.createObjectURL` | Blob local (some ao dar refresh) | Supabase Storage bucket `hub-photos/{restaurantId}/{uuid}`. |
+| Área | Arquivo(s) | Persistência real |
+| --- | --- | --- |
+| Restaurante | `api.ts#getRestaurantBySlug`, `updateRestaurant` | Tabela `public.restaurants` (Supabase externo). Merge com `SEED_RESTAURANTS`/`RESTAURANT_CONFIG` para preencher campos não colunados (openingHours, whatsapp URL, features default). |
+| Fotos (galeria) | `api.ts#listPhotos, createPhoto, deletePhoto, setPhotoStatus, reactToPhoto`; `subscribeRealtimePhotos` | Tabela `public.photos` + bucket `photos` (Storage público). Upload real via `supabase.storage.from('photos').upload(...)`. Realtime via publication `supabase_realtime`. |
+| Likes / Quero | `reactToPhoto` | UPDATE direto em `photos.likes`/`photos.wants` (contador único; sem tabela de reações por usuário — dívida, ver `SECURITY.md`). |
+| Rate-limit upload | `getUploadsRemaining, createPhoto` | `localStorage` (`panela.uploads.daily`, 10 uploads/dia por dispositivo). Client-side only — não bloqueia burla. |
+| Action Cards | `api.ts#listLinks, updateLink` | Tabela `public.hub_actions` (**vazia hoje** — fallback para `SEED_ACTIONS`). |
+| Eventos | `api.ts#listEvents` | Tabela `public.events` (**vazia hoje**). |
+| Analytics | `api.ts#trackEvent, listAnalytics` | Tabela `public.analytics_events` append-only. Consumo real no dashboard admin. |
+| Config restaurante (edição) | `$slug.admin.config.tsx` → `updateRestaurant` | UPDATE em `public.restaurants` (RLS aberta para authenticated — ver ADR-004 pendente). |
+| Admin auth | `useAdminSession`, `$slug.admin.login.tsx` | **Supabase Auth (email+senha) no projeto externo**. Sem `user_roles`: qualquer usuário autenticado tem acesso ao painel. |
+| WhatsApp / mensagens | `lib/hub/whatsapp.ts` | Client-only, sem backend. |
+| Curriculos / Reservas | `$slug.admin.curriculos.tsx`, `$slug.admin.reservas.tsx`, rotas públicas | **Sem persistência de leads hoje** — as rotas públicas só disparam WhatsApp. Admin lista consome placeholder. Ver `docs/TECH_DEBT.md`. |
 
-## Contratos que já existem e podem virar tabelas 1:1
-`Restaurant`, `Photo`, `HubAction` (alias `HubLink`), `HubEvent`, `AnalyticsEvent` — todos em `src/lib/hub/types.ts`.
+## Contratos ↔ tabelas
+Arquivo | Tabela
+--- | ---
+`Restaurant` (`types.ts`) | `public.restaurants` (merge parcial — vários campos vêm do seed)
+`Photo` | `public.photos`
+`HubAction`/`HubLink` | `public.hub_actions`
+`HubEvent` | `public.events`
+`AnalyticsEvent` | `public.analytics_events`
 
-## Estratégia de swap
-Reescrever apenas `src/lib/hub/api.ts` para usar `@supabase/supabase-js` (client browser público + edge functions/`requireSupabaseAuth` para escrita admin). UI, componentes, rotas e tipos permanecem intocados.
+Snapshot canônico de colunas / defaults / RLS: `docs/database/0000_baseline.sql`.
+
+## Dois clients Supabase — regra
+- `@/integrations/external-supabase/client` → **usado por tudo em `src/lib/hub/`**. Aponta para `nqdaxllqjnxwxmglbghl` (hardcoded).
+- `@/integrations/supabase/client` (auto-gerado) → aponta para o projeto Lovable Cloud, **vazio**. Não usar em código de produto até reconciliação (ADR-001).
+
+## Fluxo de escrita crítico (upload)
+1. `compressImage` (canvas, ≤ 2400px lado maior, JPEG 0.92) se `>3MB`.
+2. `supabase.storage.from('photos').upload(path, blob, { contentType, upsert:false })`.
+3. `getPublicUrl(path)` → URL persistida em `photos.url`.
+4. `insert photos ({ restaurant_id, url, author_name, caption, status:'approved' })`.
+5. `bumpRate()` local.
+6. `notify()` dispara subscribers in-memory. Realtime notifica outros clientes.
+
+## O que ainda é fallback local
+- `SEED_ACTIONS` (enquanto `hub_actions` estiver vazia).
+- Campos ricos do restaurante ausentes no schema (`openingHours`, `whatsapp` completo, `features` default).
+- `whatsapp.ts` messages.
+- `SEED_EVENTS`, `SEED_ANALYTICS` (arrays vazios, cosméticos).

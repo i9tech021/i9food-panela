@@ -1,85 +1,72 @@
 # HANDOFF — Panela da Roça Experience
 
-> Documento de transferência. Estado atual congelado em `docs/` (auditoria completa). Este arquivo é o ponto de partida para qualquer engenheiro dar continuidade.
+> Onboarding prático. Detalhe técnico em [`docs/`](./docs/README.md).
 
 ## TL;DR
-- **Produto**: hub digital mobile-first do restaurante Panela da Roça. Arquitetura já pensada como white-label multi-tenant (`/:slug/…`), embora atenda um único tenant hoje.
-- **Stack**: TanStack Start (React 19 + Vite 8), Tailwind v4, shadcn/ui, framer-motion, Radix, lucide-react, react-hook-form + zod, sonner, TanStack Query. Backend planejado: Supabase (client já instalado, não usado).
-- **Estado**: 100% funcional em cima de mocks (`src/lib/hub/api.ts` + `localStorage`). UI, fluxos, admin, PWA, empty states — tudo pronto. Falta ligar backend.
+- **Produto:** hub digital mobile-first do restaurante Panela da Roça.
+  Arquitetura multi-tenant por `slug`, um tenant ativo hoje.
+- **Stack:** TanStack Start (React 19, Vite 8), Tailwind v4, shadcn/ui,
+  framer-motion, Radix, lucide-react, react-hook-form + zod, sonner,
+  TanStack Query.
+- **Backend:** **Supabase real** (`nqdaxllqjnxwxmglbghl`, projeto
+  externo) via `src/integrations/external-supabase/client.ts`.
+  Tabelas: `restaurants`, `photos`, `hub_actions`, `events`,
+  `analytics_events`. Storage bucket público `photos`. Realtime em `photos`.
+- **Auth admin:** Supabase Auth email+senha. **Sem `user_roles`** (dívida
+  bloqueante — ver `docs/adr/ADR-004-user-roles.md`).
 
-## Onde está tudo
-```
-docs/
-  01-visao-geral.md
-  02-arquitetura-frontend.md
-  03-design-system.md
-  04-componentes.md
-  05-rotas.md
-  06-fluxos.md
-  07-preparado-para-backend.md
-  08-checklist-backend.md
-  09-divida-tecnica.md
-  10-roadmap.md
-HANDOFF.md  ← você está aqui
-```
-
-## Como rodar
+## Rodar
 ```bash
 bun install
 bun run dev       # http://localhost:8080
-bun run build     # build produção
+bun run build     # produção (edge)
 ```
 
-## Camada de dados (única a ser reescrita para backend)
-- `src/lib/hub/api.ts` — todas as funções assíncronas de leitura/escrita (photos, links, events, analytics, restaurant).
-- `src/lib/hub/types.ts` — contratos (viram tabelas 1:1 no Supabase).
-- `src/lib/hub/seed.ts` — dados iniciais.
-- `src/lib/hub/utils.ts` — helpers (isOpenNow, formatação).
-- `src/lib/hub/whatsapp.ts` — construtores de mensagem (permanece no client).
-- `src/config/restaurant.config.ts` — config única (whitelabel). Fonte de verdade estática enquanto o backend não existe.
+## Onde as coisas moram
+| Camada | Onde |
+| --- | --- |
+| Rotas | `src/routes/` (file-based, dot-notation) |
+| Componentes públicos | `src/components/hub/` |
+| Componentes admin | `src/components/admin/` |
+| UI base | `src/components/ui/` (shadcn) |
+| Camada de dados | `src/lib/hub/` (`api.ts`, `types.ts`, `seed.ts`, `utils.ts`, `whatsapp.ts`, `admin-auth.ts`) |
+| Client Supabase (uso real) | `src/integrations/external-supabase/client.ts` |
+| Client Supabase (Lovable Cloud) | `src/integrations/supabase/*` — auto-gerado, sem uso |
+| Config do restaurante | `src/config/restaurant.config.ts` |
+| Estilos/tokens | `src/styles.css` |
+| Assets | `src/assets/*.asset.json` (CDN Lovable) + `public/` (PWA) |
+| Schema real | `docs/database/0000_baseline.sql` |
+| ADRs | `docs/adr/` |
 
-**Estratégia de swap**: reescrever `api.ts` usando `@supabase/supabase-js` e `requireSupabaseAuth` para admin. Nenhum componente precisa mudar.
+## Regras não óbvias
+- **Não** editar `src/routeTree.gen.ts`.
+- **Não** editar `src/integrations/supabase/*` (auto-gerado).
+- **Não** rodar `supabase--migration` — cai no projeto Supabase errado (ADR-001).
+  Nova mudança de schema: `docs/database/NNNN_*.sql` idempotente + aplicar no SQL Editor do projeto externo.
+- Cores só via tokens CSS (`src/styles.css`). Sem `text-white`/`bg-black`/`bg-[#...]`.
+- Assets via `*.asset.json`, sem hardcode de URL de CDN.
+- Uploads: `createPhoto` faz `Storage.upload → getPublicUrl → insert row`.
+  Rate-limit de 10/dia por dispositivo (`localStorage`) — **client-side**,
+  burlável (dívida).
 
-## Autenticação
-- Nada implementado.
-- Clients Supabase auto-gerados existem em `src/integrations/supabase/` (client, client.server, auth-middleware, auth-attacher, types) — usar quando ligar auth.
-- Admin deve migrar para `src/routes/_authenticated/` gate após integrar.
+## Riscos ativos (bloqueantes antes de divulgar `/admin`)
+1. RLS de escrita aberta para `authenticated` em `photos`, `hub_actions`, `events`, `restaurants`.
+2. Sem `user_roles` — qualquer signup no Supabase externo vira admin efetivo.
+3. Gate admin é `useEffect` client-side (não bloqueia API).
+4. Rate-limit de upload só em `localStorage`.
+5. Delete de foto pode deixar órfão no Storage.
+6. `og:image` fixa no `__root.tsx` sobrescreve leaves.
 
-## PWA
-- Manifest em `public/manifest.webmanifest`.
-- Ícones: `favicon.png`, `apple-touch-icon.png`, `pwa-icon-192.png`, `pwa-icon-512.png`, `pwa-icon-512-maskable.png`.
-- Meta / theme-color / links em `src/routes/__root.tsx`.
-- Sem service worker próprio ainda (offline não suportado).
+Detalhamento: `docs/SECURITY.md`, `docs/09-divida-tecnica.md`.
 
-## O que NÃO existe ainda
-Ver `docs/08-checklist-backend.md`. Prioridade absoluta antes de qualquer dado real: **autenticar `/admin`**.
+## Divergências que precisam decisão do dono
+- **Telefone WhatsApp:** `config` diz `5522999454932`, banco diz `5522998454932`. Escolher e alinhar.
+- **Config duplicada em três lugares** (`restaurant.config.ts` + `seed.ts` + row no DB) — consolidar quando ADR-001 for reconciliada.
 
-## Convenções importantes
-- **Rotas**: file-based em `src/routes/`, dot-notation (`$slug.admin.moderacao.tsx`). Nunca editar `routeTree.gen.ts`.
-- **Assets**: imagens via `*.asset.json` em `src/assets/` (CDN Lovable). Nunca hardcodar URLs.
-- **Cores**: sempre via tokens CSS em `src/styles.css`. Nunca `text-white`, `bg-black`, `bg-[#…]`.
-- **Backend futuro**: `createServerFn` (TanStack) para lógica interna; `src/routes/api/public/*` só para webhooks. **Não usar** Supabase Edge Functions para lógica app-internal.
-- **Secrets**: já configurados (`LOVABLE_API_KEY`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`). Não expor service role no client.
-
-## Contatos oficiais (config atual)
-- WhatsApp: `+55 22 99845-4932` (`5522998454932`) — confirmar se é 998 ou 999.
-- Instagram: `@paneladaroca`.
-- Google Maps: `share.google/FSXuEZVrQ0aFkgA5y`.
-- Google Reviews: `share.google/DXVlJd8pw0RKANcLR`.
-
-## Riscos conhecidos
-1. Admin público (crítico).
-2. `og:image` global em `__root.tsx` sobrescreve leaves — mover.
-3. Upload é blob temporário (some no refresh).
-4. Divergência do telefone WhatsApp entre config e plano.
-5. `HubCard` legado convive com `ActionCard`.
-
-Ver `docs/09-divida-tecnica.md` para o inventário completo.
-
-## Próximo commit recomendado
-1. Confirmar telefone oficial + atualizar `restaurant.config.ts`.
-2. Provisionar Supabase (schema em `docs/08-checklist-backend.md`).
-3. Implementar Auth + role admin.
-4. Reescrever `src/lib/hub/api.ts` sobre Supabase.
-5. Migrar rotas admin para `_authenticated/`.
-6. Trocar upload mock por Storage real.
+## Próximos commits recomendados
+1. **ADR-004**: implementar `user_roles` + `has_role` + fechar RLS de escrita.
+2. Migrar admin para `_authenticated/` real.
+3. `photo_reactions` + trigger — matar race condition em like/quero.
+4. Rate-limit server-side de upload.
+5. Tabelas `reservations` e `job_applications` — capturar leads reais.
+6. `og:image` por rota.

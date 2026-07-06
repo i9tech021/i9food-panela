@@ -1,32 +1,32 @@
-# Documentação — Panela da Roça Experience
+# Documentação — Panela da Roça
 
-Auditoria congelada do estado atual do projeto. Nada aqui inventa funcionalidade — descreve exclusivamente o que existe no código hoje.
+Estado auditado em **2026-07-06**. Fonte da verdade da arquitetura,
+dados e decisões. `HANDOFF.md` (na raiz) é o resumo prático de onboarding.
 
-1. [Visão Geral do Produto](./01-visao-geral.md)
-2. [Arquitetura Frontend](./02-arquitetura-frontend.md)
-3. [Design System](./03-design-system.md)
-4. [Componentes](./04-componentes.md)
-5. [Rotas](./05-rotas.md)
-6. [Fluxos](./06-fluxos.md)
-7. [Estrutura preparada para Backend](./07-preparado-para-backend.md)
-8. [Checklist do Backend](./08-checklist-backend.md)
-9. [Dívida Técnica](./09-divida-tecnica.md)
-10. [Roadmap](./10-roadmap.md)
+## Referência canônica
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — camadas e fronteiras.
+- [`DATABASE.md`](./DATABASE.md) — tabelas, storage, índices (visão narrada).
+- [`database/0000_baseline.sql`](./database/0000_baseline.sql) — schema real, idempotente.
+- [`SECURITY.md`](./SECURITY.md) — RLS, sessão, rate-limit, riscos vivos.
+- [`ENVIRONMENT.md`](./ENVIRONMENT.md) — variáveis, secrets, rodar local.
+- [`DEPLOY.md`](./DEPLOY.md) — ambientes e fluxo de publish.
+- [`RUNBOOK.md`](./RUNBOOK.md) — o que fazer quando algo quebra.
+- [`MULTITENANCY.md`](./MULTITENANCY.md) — como o `slug` propaga.
+- [`WHITE_LABEL.md`](./WHITE_LABEL.md) — rebrand manual e alvo desejado.
+- [`FEATURE_GUIDE.md`](./FEATURE_GUIDE.md) — receita para adicionar features.
+- [`CODING_STANDARDS.md`](./CODING_STANDARDS.md) — regras específicas do projeto.
+- [`CHANGELOG.md`](./CHANGELOG.md) — histórico.
 
-Handoff resumido: [`../HANDOFF.md`](../HANDOFF.md).
+## ADRs
+- [`adr/ADR-001-dual-supabase-client.md`](./adr/ADR-001-dual-supabase-client.md) — dois projetos Supabase.
+- [`adr/ADR-004-user-roles.md`](./adr/ADR-004-user-roles.md) — proposta de roles admin.
 
----
+## Reescrito (auditoria)
+- [`05-rotas.md`](./05-rotas.md), [`07-preparado-para-backend.md`](./07-preparado-para-backend.md),
+  [`08-checklist-backend.md`](./08-checklist-backend.md), [`09-divida-tecnica.md`](./09-divida-tecnica.md),
+  [`10-roadmap.md`](./10-roadmap.md).
 
-## Novos (auditoria 2026-07-06)
-
-Reescrita em andamento (ver mensagem de auditoria). Já commitado:
-
-- [`database/`](./database/README.md) — schema real versionado do
-  projeto Supabase externo (`0000_baseline.sql`).
-- [`adr/`](./adr/README.md) — Architecture Decision Records.
-  - [ADR-001 — Dois projetos Supabase](./adr/ADR-001-dual-supabase-client.md)
-
-> Os arquivos numerados `01-…10` refletem a auditoria original e estão
-> **parcialmente desatualizados** (ver mensagem prévia). Serão
-> substituídos pela nova estrutura (`ARCHITECTURE.md`, `DATABASE.md`,
-> `SECURITY.md`, etc.) nos próximos passos.
+## Descritivo (ainda válido)
+- [`01-visao-geral.md`](./01-visao-geral.md), [`02-arquitetura-frontend.md`](./02-arquitetura-frontend.md),
+  [`03-design-system.md`](./03-design-system.md), [`04-componentes.md`](./04-componentes.md),
+  [`06-fluxos.md`](./06-fluxos.md).
