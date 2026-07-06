@@ -1,38 +1,44 @@
 # 10. Roadmap
 
+> Reescrito em 2026-07-06.
+
 ## ✅ Concluído
-- Fundação visual (paleta, tipografia, tokens semânticos).
-- Home do Hub com Action Cards, HoursCard, footer.
-- SideDrawer com navegação completa.
-- Galeria (com empty state ilustrado).
-- Página de detalhe da foto (like, quero, share).
-- Upload de foto (mock, publicação instantânea).
+- Fundação visual (paleta, tipografia, tokens semânticos, motion).
+- Home do Hub com Action Cards + HoursCard.
+- SideDrawer + navegação completa.
+- Galeria + detalhe da foto (like/quero/share).
+- Upload real com compressão + rate-limit client.
 - Página de confirmação pós-upload.
-- Página de eventos (empty state).
-- Admin: dashboard, moderação, conteúdo, config — todos operando sobre mock.
-- Multi-tenant por `slug` (rota) — pronto para escalar.
-- PWA instalável (manifest + ícones dedicados, apple-touch-icon, theme-color).
-- Camada de dados isolada (`src/lib/hub/`) pronta para swap Supabase.
+- Rotas Reservas / Trabalhe conosco / Eventos.
+- Admin: dashboard, moderação, conteúdo, config, currículos, reservas.
+- **Login admin (Supabase Auth email+senha)** com gate client-side.
+- **Integração real com Supabase externo** (photos + storage + realtime + analytics).
+- PWA instalável.
+- Documentação reescrita (auditoria 2026-07-06).
 
 ## 🟡 Em andamento
-- Auditoria e documentação (este pacote em `docs/`).
-- Consolidação de assets (hero webp, logo).
+- Reescrita dos docs (SECURITY, ARCHITECTURE, RUNBOOK, ADRs — este pacote).
+- Reconciliação de tokens de cor (auditar hard-codes de `text-white`/`bg-black`).
 
-## 🔜 Próximos passos (backend fase 1)
-1. Provisionar Supabase (tabelas `restaurants`, `photos`, `hub_actions`, `events`, `photo_reactions`, `analytics_events`, `user_roles`).
-2. Migrar `src/lib/hub/api.ts` para Supabase (leitura pública + admin gate).
-3. Storage bucket para fotos + upload real.
-4. Supabase Auth + role `admin`, mover `/admin/*` para `_authenticated/`.
-5. Analytics reais no dashboard.
+## 🔴 Próximos passos (segurança & fundação — bloqueantes)
+1. **ADR-004**: implementar `user_roles` + `has_role('admin')`, restringir RLS de escrita em `photos`/`hub_actions`/`events`/`restaurants` a `has_role('admin')`.
+2. **Gate `_authenticated/` real** para admin (não só `useEffect`).
+3. **`photo_reactions` + trigger** para matar race condition de like/quero.
+4. **Rate-limit server-side** de upload (edge function ou policy com `count(*)` recente).
+5. **Tabelas `reservations` e `job_applications`** — capturar leads que hoje só vão para WhatsApp.
+6. **`og:image` por rota** (dinâmico em `/foto/:id`).
 
-## 🚀 Futuras versões
-- QR/NFC por mesa (geração + tracking `tableCode`/`source`).
-- Reservas via formulário nativo (opcional, hoje 100% WhatsApp).
-- Página de menu/cardápio digital.
-- Sistema de recompensas (curtidas → benefício).
+## 🚀 Produto (após base sólida)
+- QR/NFC por mesa + tracking real (`tableCode`, `source`).
+- Cardápio digital (rota `/menu`).
+- Programa de recompensas (curtidas → benefício).
+- Realtime já ligado — expor "novas fotos ao vivo" na galeria.
+- White-label real: onboarding de novos tenants via admin master.
+- Editor de tema por tenant (paleta, hero, logo).
+- Reservas com calendário nativo.
+- Notificações push (web-push).
+- Integração com PDV / i9 Food OS.
 - Multi-idioma (pt-BR / en).
-- Notificações push (PWA + web-push).
-- Realtime na galeria (novas fotos aparecem sem refresh).
-- White-label real: onboarding de novos restaurantes via admin master.
-- Integração com sistemas de PDV/estoque (i9 Food OS).
-- Editor de temas por tenant (paleta, hero, logo).
+
+## Reconciliação técnica
+- Consolidar em **um único** projeto Supabase (ADR-001) quando o segundo tenant entrar OU quando surgir a primeira `createServerFn` com `requireSupabaseAuth` acessando dados do app.

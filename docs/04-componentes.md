@@ -90,3 +90,24 @@
 
 ## UI base (`src/components/ui/`)
 Biblioteca shadcn/ui completa — componentes usados hoje: `button`, `input`, `textarea`, `label`, `select`, `sheet`, `dialog`, `alert-dialog`, `card`, `skeleton`, `sonner`, `tabs`, `switch`, `form`, `toast`, `separator`, `badge`. Demais componentes disponíveis mas não consumidos.
+## Adicionados após auditoria (2026-07-06)
+
+### `hub/BottomNav.tsx`
+Barra inferior fixa (usada em detalhe da foto). Estável.
+
+### Rotas públicas novas
+- `routes/$slug.reservas.tsx` — CTA WhatsApp com mensagem pré-preenchida.
+- `routes/$slug.trabalhe-conosco.tsx` — CTA WhatsApp para envio de currículo.
+
+### Rotas admin novas
+- `routes/$slug.admin.login.tsx` — login Supabase (email+senha).
+- `routes/$slug.admin.reservas.tsx` — placeholder de leads (sem tabela ainda).
+- `routes/$slug.admin.curriculos.tsx` — placeholder de leads (sem tabela ainda).
+
+### `hub/admin-auth`
+- `lib/hub/admin-auth.ts` → `useAdminSession()` + `adminSignOut()`.
+  Escuta `supabase.auth.onAuthStateChange` no client externo.
+
+### `integrations/external-supabase/client.ts`
+Client dedicado do projeto Supabase externo (`nqdaxllqjnxwxmglbghl`).
+URL + anon key hardcoded por convenção — ver ADR-001.
