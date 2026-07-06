@@ -171,8 +171,12 @@ function EnviarPage() {
             <div className="type-caption mt-1">Toque para escolher da galeria ou câmera</div>
           </label>
         ) : (
-          <div className="relative overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)]">
-            <img src={preview} alt="Prévia" className="aspect-[4/3] w-full object-cover" />
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-black/5 shadow-[var(--shadow-soft)]">
+            <img
+              src={preview}
+              alt="Prévia"
+              className="mx-auto block max-h-[70vh] w-auto max-w-full object-contain"
+            />
             <button
               type="button"
               onClick={() => setFile(null)}
