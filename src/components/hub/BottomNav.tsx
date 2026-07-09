@@ -18,19 +18,9 @@ const ITEMS = [
 export function BottomNav({ slug, active, onMore }: Props) {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 bg-background/55 backdrop-blur-2xl pb-[max(env(safe-area-inset-bottom),0.25rem)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 backdrop-blur-md pb-[max(env(safe-area-inset-bottom),0.25rem)]"
       aria-label="Navegação principal"
     >
-      {/* fio de luz cobre no topo */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--gold)]/60 to-transparent"
-      />
-      {/* highlight interno superior — reflexo de vidro */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/8 to-transparent"
-      />
       <div className="mx-auto flex max-w-3xl items-stretch justify-between px-2 py-1.5">
         {ITEMS.map((item) => {
           const Icon = item.icon;
