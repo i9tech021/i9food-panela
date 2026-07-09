@@ -122,12 +122,16 @@ function HomePage() {
         aria-hidden={!showMenu}
         tabIndex={showMenu ? 0 : -1}
         className={cn(
-          "fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md ring-1 ring-white/10 transition-all duration-300 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/70",
+          "group fixed left-4 top-4 z-30 inline-flex size-11 items-center justify-center rounded-full bg-white/8 text-white backdrop-blur-xl ring-1 ring-[color:var(--gold)]/30 shadow-[0_8px_28px_-8px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.18)] transition-all duration-300 hover:bg-white/14 hover:ring-[color:var(--gold)]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]/70",
           showMenu
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-3 pointer-events-none",
         )}
       >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/25 via-transparent to-transparent opacity-70"
+        />
         <MenuBars />
       </button>
 
@@ -152,20 +156,32 @@ function HomePage() {
           transition={{ duration: 0.55, ease: "easeOut", delay: 0.15 }}
           className="absolute inset-x-0 bottom-16 hidden justify-center px-6 sm:flex"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-black/60 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.32em] text-white/90 ring-1 ring-white/15 backdrop-blur-md">
-            <span className="size-1.5 rounded-full bg-[color:var(--gold)]" />
-            Desde {restaurant.since}
-            <span className="text-white/40">·</span>
-            {restaurant.city ?? "Panela da Roça"}
+          <div className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white/8 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/95 ring-1 ring-[color:var(--gold)]/35 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-xl">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent"
+            />
+            <span className="relative size-1.5 rounded-full bg-[color:var(--gold)] shadow-[0_0_10px_rgba(212,175,80,0.9)]" />
+            <span className="relative">Desde {restaurant.since}</span>
+            <span className="relative text-white/40">·</span>
+            <span className="relative">{restaurant.city ?? "Panela da Roça"}</span>
           </div>
         </motion.div>
       </section>
 
-      {/* Fade editorial — transição orgânica entre a capa e o hub */}
-      <div
-        aria-hidden
-        className="pointer-events-none relative -mt-16 h-16 bg-gradient-to-b from-transparent via-[oklch(0.16_0.02_55)]/40 to-background"
-      />
+      {/* Transição cinematográfica hero → hub: aurora cobre/dourada + faixa glass */}
+      <div aria-hidden className="pointer-events-none relative -mt-28 h-28">
+        {/* Aurora glow pulsante — cor cobre/dourada atrás do glass */}
+        <div className="absolute inset-x-0 -top-10 flex justify-center">
+          <div className="h-40 w-[80%] rounded-[100%] bg-[radial-gradient(closest-side,rgba(212,175,80,0.55),rgba(180,90,40,0.25)_45%,transparent_75%)] blur-3xl animate-[aurora_6s_ease-in-out_infinite]" />
+        </div>
+        {/* Faixa glass frosted — costura hero e hub */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-white/6 backdrop-blur-2xl ring-1 ring-inset ring-white/10 shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.55)]" />
+        {/* Fio de luz superior cor cobre */}
+        <div className="absolute inset-x-8 bottom-20 h-px bg-gradient-to-r from-transparent via-[color:var(--gold)]/70 to-transparent" />
+        {/* Gradient orgânico para fundir com o background */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background/95" />
+      </div>
 
       {/* Sheet inferior — Hub (sem barras nem contornos duros) */}
       <section className="relative z-10 px-6 pt-2 pb-2">
