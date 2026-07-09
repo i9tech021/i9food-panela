@@ -262,3 +262,14 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+@keyframes aurora {
+  0%, 100% {
+    opacity: 0.75;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.08);
+  }
+}
