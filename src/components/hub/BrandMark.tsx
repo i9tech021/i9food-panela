@@ -1,4 +1,3 @@
-import logo from "@/assets/logo-panela.png.asset.json";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -18,7 +17,7 @@ interface Props {
 export function BrandMark({ className, size = 40, alt = "Panela da Roça", plate }: Props) {
   const img = (
     <img
-      src={logo.url}
+      src="/logo-panela.png"
       alt={alt}
       width={size}
       height={size}
