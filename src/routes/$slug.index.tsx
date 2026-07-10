@@ -161,16 +161,17 @@ function HomePage() {
         </motion.div>
       </section>
 
-      {/* Sheet inferior — Hub com efeito glass premium (fica ABAIXO da hero, não cobre a foto) */}
-      <section className="relative z-10 px-6 pt-8 pb-2 -mt-6 rounded-t-[2.5rem] bg-background/70 backdrop-blur-2xl ring-1 ring-white/40 shadow-[0_-20px_60px_-30px_oklch(0.22_0.02_55/0.45)]">
-        {/* Realce superior — linha de luz cobre + aurora glow atrás */}
+      {/* Sheet inferior — Hub com glass premium. NÃO cobre a hero: começa exatamente abaixo dela. */}
+      <section className="relative z-10 px-6 pt-7 pb-2 rounded-t-[2.5rem] bg-background shadow-[0_-16px_40px_-24px_oklch(0.22_0.02_55/0.35)]">
+        {/* Aurora glow — discreta, atrás de tudo, sem invadir a foto (top-0 fica na borda entre hero e sheet) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--copper)]/60 to-transparent"
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-24 w-[80%] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[radial-gradient(closest-side,oklch(0.63_0.12_55/0.18),transparent_75%)] blur-2xl motion-safe:animate-[pulse_6s_ease-in-out_infinite]"
         />
+        {/* Linha de luz cobre — realce sutil no topo do sheet */}
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-40 w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,oklch(0.63_0.12_55/0.35),transparent_70%)] blur-2xl"
+          className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--copper)]/50 to-transparent"
         />
         {/* Handle sutil (dica de sheet) */}
         <div
