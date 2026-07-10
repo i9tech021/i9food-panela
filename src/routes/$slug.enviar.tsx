@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { z } from "zod";
-import { ArrowLeft, Camera, ChevronLeft, ChevronRight, ImagePlus, Loader2, Plus, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, ChevronLeft, ChevronRight, ImagePlus, Loader2, Plus, X } from "lucide-react";
 
 import {
   createPhoto,
@@ -145,8 +145,8 @@ function EnviarPage() {
   return (
     <main className="relative min-h-screen bg-background pb-24">
       {/* Header limpo */}
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-4">
+      <header className="sticky top-0 z-30 border-b border-[color:var(--copper)]/10 bg-background/85 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-5">
           <Link
             to="/$slug"
             params={{ slug: restaurant.slug }}
@@ -156,9 +156,9 @@ function EnviarPage() {
             <ArrowLeft className="size-4" />
           </Link>
           <div className="flex-1 truncate text-center">
-            <div className="type-button truncate text-primary">Publicar momento</div>
+            <div className="font-display text-lg tracking-tight text-primary truncate">Panela da Roça</div>
           </div>
-          <span className="size-9" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--copper)]">Publicar</span>
         </div>
       </header>
 
@@ -167,14 +167,16 @@ function EnviarPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
         onSubmit={onSubmit}
-        className="mx-auto max-w-xl px-5 pt-8 space-y-6"
+        className="mx-auto max-w-xl px-6 pt-10 space-y-9"
       >
-        <div>
-          <div className="type-label text-[color:var(--copper)]">Momentos no Panela</div>
-          <h1 className="type-heading mt-1.5 text-primary text-balance">
-            Publique seu momento agora.
+        <div className="space-y-3">
+          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[color:var(--copper)]">
+            Momentos no Panela
+          </div>
+          <h1 className="font-display text-[2.6rem] leading-[1.02] text-primary text-balance">
+            Compartilhe o seu <span className="text-[color:var(--copper)]">tempero</span>.
           </h1>
-          <p className="type-subtitle mt-2 max-w-md text-balance">
+          <p className="max-w-[300px] text-sm leading-relaxed text-muted-foreground">
             Sua foto entra na galeria da casa na hora, junto com a dos outros clientes.
           </p>
         </div>
@@ -182,7 +184,7 @@ function EnviarPage() {
         {/* Dropzone / Carousel de previews */}
         {previews.length === 0 ? (
           <label
-            className="group flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-card/60 text-center transition-colors hover:border-[color:var(--copper)] hover:bg-card"
+            className="group relative flex aspect-[4/5] w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-[color:var(--sage)]/30 bg-[color:var(--sage)]/5 text-center transition-all hover:border-[color:var(--copper)]/60 hover:bg-[color:var(--copper)]/[0.04] active:scale-[0.995]"
           >
             <input
               ref={inputRef}
@@ -195,12 +197,14 @@ function EnviarPage() {
                 e.currentTarget.value = "";
               }}
             />
-            <span className="grid size-14 place-items-center rounded-2xl bg-[color:var(--copper)]/12 text-[color:var(--copper)] transition-transform group-hover:-translate-y-0.5">
-              <ImagePlus className="size-6" strokeWidth={1.75} />
+            <span className="grid size-16 place-items-center rounded-full bg-background text-[color:var(--copper)] shadow-[var(--shadow-soft)] transition-transform group-hover:-translate-y-1">
+              <ImagePlus className="size-7" strokeWidth={1.6} />
             </span>
-            <div className="mt-4 type-button text-primary">Adicionar fotos</div>
-            <div className="type-caption mt-1">
-              Escolha uma ou várias da galeria (ou tire na hora)
+            <div className="space-y-1.5">
+              <div className="font-display text-xl text-primary">Adicionar fotos</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
+                Da galeria · ou tire na hora
+              </div>
             </div>
           </label>
         ) : (
@@ -245,7 +249,7 @@ function EnviarPage() {
             </div>
 
             {/* Miniaturas + botão adicionar mais */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex gap-2.5 overflow-x-auto pb-1">
               {previews.map((url, i) => (
                 <button
                   key={url}
@@ -253,10 +257,10 @@ function EnviarPage() {
                   onClick={() => setActiveIdx(i)}
                   aria-label={`Ver foto ${i + 1}`}
                   className={cn(
-                    "relative size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors",
+                    "relative size-16 shrink-0 overflow-hidden rounded-2xl border-2 transition-all",
                     i === activeIdx
-                      ? "border-[color:var(--copper)]"
-                      : "border-transparent opacity-70 hover:opacity-100",
+                      ? "border-[color:var(--copper)] shadow-[var(--shadow-soft)]"
+                      : "border-transparent opacity-60 hover:opacity-100",
                   )}
                 >
                   <img src={url} alt="" className="size-full object-cover" />
@@ -264,7 +268,7 @@ function EnviarPage() {
               ))}
               {files.length < remaining && (
                 <label
-                  className="grid size-16 shrink-0 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-[color:var(--copper)] hover:text-[color:var(--copper)]"
+                  className="grid size-16 shrink-0 cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-[color:var(--sage)]/40 bg-[color:var(--sage)]/5 text-[color:var(--copper)] transition-colors hover:border-[color:var(--copper)] hover:bg-[color:var(--copper)]/5"
                   aria-label="Adicionar mais fotos"
                 >
                   <input
@@ -286,9 +290,9 @@ function EnviarPage() {
         )}
 
         {/* Campos opcionais */}
-        <div className="space-y-3">
+        <div className="space-y-5">
           <Field
-            label="Nome ou apelido"
+            label="Quem publicou"
             optional
             value={author}
             onChange={setAuthor}
@@ -296,7 +300,7 @@ function EnviarPage() {
             maxLength={40}
           />
           <Field
-            label="Legenda"
+            label="Legenda do momento"
             optional
             value={caption}
             onChange={setCaption}
@@ -311,9 +315,9 @@ function EnviarPage() {
           type="submit"
           disabled={!canSubmit}
           className={cn(
-            "flex w-full items-center justify-center gap-2 rounded-full py-4 type-button transition-all",
+            "flex w-full items-center justify-center gap-3 rounded-2xl py-5 text-sm font-semibold tracking-wide transition-all",
             canSubmit
-              ? "bg-[color:var(--copper)] text-[color:var(--cream)] shadow-[var(--shadow-lift)] hover:-translate-y-0.5"
+              ? "bg-[color:var(--copper)] text-[color:var(--cream)] shadow-[0_18px_40px_-18px_color-mix(in_oklab,var(--copper)_65%,transparent)] hover:-translate-y-0.5 active:scale-[0.98]"
               : "bg-muted text-muted-foreground",
           )}
         >
@@ -327,22 +331,26 @@ function EnviarPage() {
           ) : (
             <>
               <Camera className="size-4" />
-              {files.length > 1
-                ? `Publicar ${files.length} fotos na galeria`
-                : "Publicar na galeria"}
+              <span>
+                {files.length > 1
+                  ? `Publicar ${files.length} fotos na galeria`
+                  : "Publicar na galeria"}
+              </span>
+              <ArrowRight className="size-4 opacity-80" />
             </>
           )}
         </button>
 
-        <p className="type-caption text-center">
-          Ao publicar você concorda em exibir sua foto na galeria pública do Panela.
-        </p>
-
-        <p className="type-caption text-center">
-          {remaining > 0
-            ? `Você ainda pode publicar ${remaining} ${remaining === 1 ? "foto" : "fotos"} hoje.`
-            : "Você atingiu o limite de 10 publicações hoje. Volte amanhã 🌱"}
-        </p>
+        <div className="space-y-1.5 text-center">
+          <p className="text-xs text-muted-foreground/80">
+            Ao publicar você concorda em exibir sua foto na galeria pública do Panela.
+          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--sage)]">
+            {remaining > 0
+              ? `Restam ${remaining} ${remaining === 1 ? "foto" : "fotos"} hoje`
+              : "Limite diário atingido · volte amanhã 🌱"}
+          </p>
+        </div>
 
         {errorMsg && (
           <p className="rounded-xl bg-destructive/10 px-4 py-3 text-center type-caption text-destructive">
@@ -352,23 +360,21 @@ function EnviarPage() {
       </motion.form>
 
       {/* Galeria ao vivo abaixo do formulário */}
-      <section className="mx-auto max-w-3xl px-5 pt-14">
-        <header className="mb-5">
-          <div className="type-label text-[color:var(--copper)]">
-            Momentos no Panela
-          </div>
-          <h2 className="type-title mt-1.5 text-primary">
-            {photos.length > 0
-              ? "Recém-publicados pela galera"
-              : "Ainda sem publicações"}
+      <section className="mx-auto max-w-3xl px-6 pt-16">
+        <header className="mb-6 flex items-end justify-between gap-4 border-b border-[color:var(--copper)]/15 pb-4">
+          <h2 className="font-display text-2xl leading-tight text-primary">
+            {photos.length > 0 ? "Recém-publicados" : "Ainda sem publicações"}
           </h2>
+          <span className="pb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[color:var(--copper)]">
+            Pela galera
+          </span>
         </header>
 
         {photos.length > 0 ? (
           <GalleryGrid photos={photos} slug={restaurant.slug} />
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-card/50 px-6 py-8 text-center">
-            <p className="type-caption">
+          <div className="rounded-3xl border border-dashed border-[color:var(--sage)]/30 bg-[color:var(--sage)]/5 px-6 py-10 text-center">
+            <p className="text-sm text-muted-foreground">
               Nenhuma foto por aqui ainda. A sua pode ser a primeira.
             </p>
           </div>
@@ -396,12 +402,18 @@ function Field({
   optional?: boolean;
 }) {
   const shared =
-    "w-full rounded-2xl border border-border bg-card px-4 py-3.5 type-body text-primary placeholder:text-muted-foreground/70 transition-colors focus:border-[color:var(--copper)] focus:outline-none focus:ring-2 focus:ring-[color:var(--copper)]/20";
+    "w-full rounded-2xl border border-[color:var(--copper)]/15 bg-card px-5 py-3.5 text-sm text-primary shadow-[inset_0_2px_4px_rgba(60,42,33,0.04)] placeholder:text-muted-foreground/60 transition-colors focus:border-[color:var(--copper)] focus:outline-none focus:ring-2 focus:ring-[color:var(--copper)]/20";
   return (
     <label className="block">
-      <span className="mb-2 flex items-baseline justify-between">
-        <span className="type-label text-primary">{label}</span>
-        {optional && <span className="type-caption">opcional</span>}
+      <span className="mb-2 flex items-baseline justify-between px-1">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--sage)]">
+          {label}
+        </span>
+        {optional && (
+          <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">
+            opcional
+          </span>
+        )}
       </span>
       {multiline ? (
         <textarea
