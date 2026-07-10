@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Camera, Sparkles, MapPin, MoreHorizontal } from "lucide-react";
+import { Home, Camera, PartyPopper, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ interface Props {
 const ITEMS = [
   { key: "home", label: "Início", icon: Home, to: "/$slug" as const },
   { key: "moments", label: "Momentos", icon: Camera, to: "/$slug/galeria" as const },
-  { key: "events", label: "Eventos", icon: Sparkles, to: "/$slug/eventos" as const },
+  { key: "events", label: "Eventos", icon: PartyPopper, to: "/$slug/eventos" as const },
 ] as const;
 
 export function BottomNav({ slug, active, onMore }: Props) {

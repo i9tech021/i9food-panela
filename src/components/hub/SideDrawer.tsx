@@ -106,7 +106,7 @@ export function SideDrawer({ open, onClose, restaurant }: Props) {
             {/* Header */}
             <div className="relative flex items-center justify-between border-b border-white/8 px-5 pt-6 pb-5">
               <div className="flex items-center gap-3">
-                <BrandMark size={40} />
+                <BrandMark size={40} plate />
                 <div className="leading-tight">
                   <div className="font-display text-lg">Panela da Roça</div>
                   <div className="text-[10px] uppercase tracking-[0.28em] text-white/55">

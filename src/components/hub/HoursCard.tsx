@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 
 import type { Restaurant } from "@/lib/hub/types";
@@ -24,7 +25,14 @@ interface Props {
  * a partir dos dados do backend sem mudança de UI.
  */
 export function HoursCard({ restaurant, className }: Props) {
-  const open = isOpenNow(restaurant);
+  // Avalia sempre no cliente (evita mismatch com o horário do servidor / SSR em UTC)
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const tick = () => setOpen(isOpenNow(restaurant));
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(id);
+  }, [restaurant]);
   const hours = restaurant.openingHours;
 
   // agrupa dias com mesmo horário
