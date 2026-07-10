@@ -25,10 +25,26 @@ function TenantLayout() {
     lastPath.current = location.pathname;
     // Não trackear área admin.
     if (location.pathname.includes("/admin")) return;
+    let source: string | null = null;
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlSrc = params.get("src");
+      const storageKey = `hub:src:${restaurant.id}`;
+      if (urlSrc) {
+        source = urlSrc.slice(0, 32);
+        try {
+          window.sessionStorage.setItem(storageKey, source);
+        } catch {}
+      } else {
+        try {
+          source = window.sessionStorage.getItem(storageKey);
+        } catch {}
+      }
+    }
     trackEvent({
       restaurantId: restaurant.id,
       type: "visit",
-      meta: { page: location.pathname },
+      meta: { page: location.pathname, ...(source ? { source } : {}) },
     });
   }, [restaurant, location.pathname]);
 
