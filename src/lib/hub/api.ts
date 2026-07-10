@@ -377,6 +377,14 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
     console.warn("[api] reactToPhoto write", updErr.message);
     throw updErr;
   }
+  // Fire-and-forget analytics event (não bloqueia UI).
+  void supabase.from("analytics_events").insert({
+    restaurant_id: "",
+    event_type: kind === "like" ? "photo_like" : "photo_want",
+    payload: { photoId: id, delta },
+  }).then(({ error }) => {
+    if (error) console.warn("[api] reactToPhoto track", error.message);
+  });
   notify();
 }
 
