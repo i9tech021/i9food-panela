@@ -306,6 +306,12 @@ export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
     console.warn("[api] createPhoto", error?.message);
     throw error ?? new Error("createPhoto failed");
   }
+  void trackEvent({
+    restaurantId: input.restaurantId,
+    type: "photo_upload",
+    source: input.source,
+    meta: { photoId: (data as PhotoRow).id },
+  });
   notify();
   bumpRate();
   return mapPhoto(data as PhotoRow);
