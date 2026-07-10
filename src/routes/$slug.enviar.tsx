@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { z } from "zod";
-import { ArrowLeft, Camera, ImagePlus, Loader2, X } from "lucide-react";
+import { ArrowLeft, Camera, ChevronLeft, ChevronRight, ImagePlus, Loader2, Plus, X } from "lucide-react";
 
 import {
   createPhoto,
@@ -62,54 +62,82 @@ function EnviarPage() {
 
   const photos = useLivePhotos(restaurant?.id);
 
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [author, setAuthor] = useState("");
   const [caption, setCaption] = useState("");
   const [state, setState] = useState<"idle" | "submitting">("idle");
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number>(UPLOAD_DAILY_LIMIT);
   const inputRef = useRef<HTMLInputElement>(null);
+  const addMoreRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setRemaining(getUploadsRemaining());
   }, []);
 
   useEffect(() => {
-    if (!file) {
-      setPreview(null);
+    if (files.length === 0) {
+      setPreviews([]);
+      setActiveIdx(0);
       return;
     }
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setPreviews(urls);
+    setActiveIdx((i) => Math.min(i, urls.length - 1));
+    return () => {
+      urls.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [files]);
 
   if (!restaurant) return <NotFoundRestaurant />;
 
-  const canSubmit = !!file && state === "idle" && remaining > 0;
+  const canSubmit = files.length > 0 && state === "idle" && remaining > 0;
+
+  const addFiles = (list: FileList | null) => {
+    if (!list || list.length === 0) return;
+    const incoming = Array.from(list).filter((f) => f.type.startsWith("image/"));
+    setFiles((prev) => {
+      const room = Math.max(0, remaining - prev.length);
+      const merged = [...prev, ...incoming].slice(0, prev.length + room);
+      return merged;
+    });
+  };
+
+  const removeAt = (idx: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit || !file) return;
+    if (!canSubmit || files.length === 0) return;
     setState("submitting");
     setErrorMsg(null);
+    const total = files.length;
+    setProgress({ done: 0, total });
     try {
-      await createPhoto({
-        restaurantId: restaurant.id,
-        file,
-        authorName: author,
-        caption,
-        tableCode: search.t ?? null,
-        source: search.src,
-      });
-        setRemaining(getUploadsRemaining());
-        setFile(null);
-        setCaption("");
-        setState("idle");
+      for (let i = 0; i < files.length; i++) {
+        await createPhoto({
+          restaurantId: restaurant.id,
+          file: files[i],
+          authorName: author,
+          caption,
+          tableCode: search.t ?? null,
+          source: search.src,
+        });
+        setProgress({ done: i + 1, total });
+      }
+      setRemaining(getUploadsRemaining());
+      setFiles([]);
+      setCaption("");
+      setProgress(null);
+      setState("idle");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Falha ao publicar.");
       setState("idle");
+      setProgress(null);
       setRemaining(getUploadsRemaining());
     }
   };
@@ -151,8 +179,8 @@ function EnviarPage() {
           </p>
         </div>
 
-        {/* Dropzone / Preview */}
-        {!preview ? (
+        {/* Dropzone / Carousel de previews */}
+        {previews.length === 0 ? (
           <label
             className="group flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-card/60 text-center transition-colors hover:border-[color:var(--copper)] hover:bg-card"
           >
@@ -160,31 +188,100 @@ function EnviarPage() {
               ref={inputRef}
               type="file"
               accept="image/*"
-              capture="environment"
+              multiple
               className="sr-only"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                addFiles(e.target.files);
+                e.currentTarget.value = "";
+              }}
             />
             <span className="grid size-14 place-items-center rounded-2xl bg-[color:var(--copper)]/12 text-[color:var(--copper)] transition-transform group-hover:-translate-y-0.5">
               <ImagePlus className="size-6" strokeWidth={1.75} />
             </span>
-            <div className="mt-4 type-button text-primary">Adicionar foto</div>
-            <div className="type-caption mt-1">Toque para escolher da galeria ou câmera</div>
+            <div className="mt-4 type-button text-primary">Adicionar fotos</div>
+            <div className="type-caption mt-1">
+              Escolha uma ou várias da galeria (ou tire na hora)
+            </div>
           </label>
         ) : (
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-black/5 shadow-[var(--shadow-soft)]">
-            <img
-              src={preview}
-              alt="Prévia"
-              className="mx-auto block max-h-[70vh] w-auto max-w-full object-contain"
-            />
-            <button
-              type="button"
-              onClick={() => setFile(null)}
-              aria-label="Remover foto"
-              className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur-md hover:bg-black/75"
-            >
-              <X className="size-4" />
-            </button>
+          <div className="space-y-3">
+            <div className="relative overflow-hidden rounded-3xl border border-border bg-black/5 shadow-[var(--shadow-soft)]">
+              <img
+                src={previews[activeIdx]}
+                alt={`Prévia ${activeIdx + 1} de ${previews.length}`}
+                className="mx-auto block max-h-[60vh] w-auto max-w-full object-contain"
+              />
+              <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
+                {activeIdx + 1} / {previews.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeAt(activeIdx)}
+                aria-label="Remover esta foto"
+                className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur-md hover:bg-black/75"
+              >
+                <X className="size-4" />
+              </button>
+              {previews.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveIdx((i) => (i - 1 + previews.length) % previews.length)}
+                    aria-label="Anterior"
+                    className="absolute left-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-md hover:bg-black/75"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveIdx((i) => (i + 1) % previews.length)}
+                    aria-label="Próxima"
+                    className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur-md hover:bg-black/75"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Miniaturas + botão adicionar mais */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {previews.map((url, i) => (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => setActiveIdx(i)}
+                  aria-label={`Ver foto ${i + 1}`}
+                  className={cn(
+                    "relative size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors",
+                    i === activeIdx
+                      ? "border-[color:var(--copper)]"
+                      : "border-transparent opacity-70 hover:opacity-100",
+                  )}
+                >
+                  <img src={url} alt="" className="size-full object-cover" />
+                </button>
+              ))}
+              {files.length < remaining && (
+                <label
+                  className="grid size-16 shrink-0 cursor-pointer place-items-center rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-[color:var(--copper)] hover:text-[color:var(--copper)]"
+                  aria-label="Adicionar mais fotos"
+                >
+                  <input
+                    ref={addMoreRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="sr-only"
+                    onChange={(e) => {
+                      addFiles(e.target.files);
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                  <Plus className="size-5" />
+                </label>
+              )}
+            </div>
           </div>
         )}
 
@@ -222,11 +319,17 @@ function EnviarPage() {
         >
           {state === "submitting" ? (
             <>
-              <Loader2 className="size-4 animate-spin" /> Publicando…
+              <Loader2 className="size-4 animate-spin" />
+              {progress
+                ? `Publicando ${progress.done + 1}/${progress.total}…`
+                : "Publicando…"}
             </>
           ) : (
             <>
-              <Camera className="size-4" /> Publicar na galeria
+              <Camera className="size-4" />
+              {files.length > 1
+                ? `Publicar ${files.length} fotos na galeria`
+                : "Publicar na galeria"}
             </>
           )}
         </button>
