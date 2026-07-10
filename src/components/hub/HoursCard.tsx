@@ -51,7 +51,7 @@ export function HoursCard({ restaurant, className }: Props) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3",
+        "flex items-center gap-3 rounded-2xl border border-white/50 bg-card/60 backdrop-blur-xl px-4 py-3 shadow-[0_1px_0_oklch(1_0_0/0.6)_inset,0_8px_24px_-12px_oklch(0.22_0.02_55/0.25)]",
         className,
       )}
     >
