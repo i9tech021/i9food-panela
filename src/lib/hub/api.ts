@@ -306,6 +306,12 @@ export async function createPhoto(input: CreatePhotoInput): Promise<Photo> {
     console.warn("[api] createPhoto", error?.message);
     throw error ?? new Error("createPhoto failed");
   }
+  void trackEvent({
+    restaurantId: input.restaurantId,
+    type: "photo_upload",
+    source: input.source,
+    meta: { photoId: (data as PhotoRow).id },
+  });
   notify();
   bumpRate();
   return mapPhoto(data as PhotoRow);
@@ -360,7 +366,7 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
   const col = kind === "like" ? "likes" : "wants";
   const { data, error } = await supabase
     .from("photos")
-    .select(col)
+    .select(`${col}, restaurant_id`)
     .eq("id", id)
     .maybeSingle();
   if (error || !data) {
@@ -368,6 +374,7 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
     throw error ?? new Error("reactToPhoto read failed");
   }
   const current = ((data as Record<string, number | null>)[col] ?? 0) as number;
+  const restaurantId = ((data as Record<string, string | null>).restaurant_id ?? "") as string;
   const next = Math.max(0, current + delta);
   const { error: updErr } = await supabase
     .from("photos")
@@ -377,6 +384,14 @@ export async function reactToPhoto(id: string, kind: "like" | "want", delta: 1 |
     console.warn("[api] reactToPhoto write", updErr.message);
     throw updErr;
   }
+  // Fire-and-forget analytics event (não bloqueia UI).
+  void supabase.from("analytics_events").insert({
+    restaurant_id: restaurantId,
+    event_type: kind === "like" ? "photo_like" : "photo_want",
+    payload: { photoId: id, delta },
+  }).then(({ error }) => {
+    if (error) console.warn("[api] reactToPhoto track", error.message);
+  });
   notify();
 }
 
