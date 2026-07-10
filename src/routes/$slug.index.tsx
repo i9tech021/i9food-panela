@@ -161,14 +161,22 @@ function HomePage() {
         </motion.div>
       </section>
 
-      {/* Fade editorial — transição orgânica entre a capa e o hub */}
-      <div
-        aria-hidden
-        className="pointer-events-none relative -mt-16 h-16 bg-gradient-to-b from-transparent via-[oklch(0.16_0.02_55)]/40 to-background"
-      />
-
-      {/* Sheet inferior — Hub (sem barras nem contornos duros) */}
-      <section className="relative z-10 px-6 pt-2 pb-2">
+      {/* Sheet inferior — Hub com efeito glass premium (fica ABAIXO da hero, não cobre a foto) */}
+      <section className="relative z-10 px-6 pt-8 pb-2 -mt-6 rounded-t-[2.5rem] bg-background/70 backdrop-blur-2xl ring-1 ring-white/40 shadow-[0_-20px_60px_-30px_oklch(0.22_0.02_55/0.45)]">
+        {/* Realce superior — linha de luz cobre + aurora glow atrás */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--copper)]/60 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-40 w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,oklch(0.63_0.12_55/0.35),transparent_70%)] blur-2xl"
+        />
+        {/* Handle sutil (dica de sheet) */}
+        <div
+          aria-hidden
+          className="mx-auto mb-6 h-1 w-10 rounded-full bg-foreground/15"
+        />
         <motion.header
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 8 }}

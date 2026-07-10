@@ -18,7 +18,7 @@ const ITEMS = [
 export function BottomNav({ slug, active, onMore }: Props) {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 backdrop-blur-md pb-[max(env(safe-area-inset-bottom),0.25rem)]"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-white/40 bg-background/60 backdrop-blur-2xl shadow-[0_-8px_32px_-12px_oklch(0.22_0.02_55/0.25)] pb-[max(env(safe-area-inset-bottom),0.25rem)]"
       aria-label="Navegação principal"
     >
       <div className="mx-auto flex max-w-3xl items-stretch justify-between px-2 py-1.5">
