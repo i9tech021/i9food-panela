@@ -22,6 +22,7 @@ import { Route as SlugAdminRouteImport } from './routes/$slug.admin'
 import { Route as SlugAdminIndexRouteImport } from './routes/$slug.admin.index'
 import { Route as SlugFotoPhotoIdRouteImport } from './routes/$slug.foto.$photoId'
 import { Route as SlugAdminReservasRouteImport } from './routes/$slug.admin.reservas'
+import { Route as SlugAdminQrCodesRouteImport } from './routes/$slug.admin.qr-codes'
 import { Route as SlugAdminModeracaoRouteImport } from './routes/$slug.admin.moderacao'
 import { Route as SlugAdminLoginRouteImport } from './routes/$slug.admin.login'
 import { Route as SlugAdminCurriculosRouteImport } from './routes/$slug.admin.curriculos'
@@ -93,6 +94,11 @@ const SlugAdminReservasRoute = SlugAdminReservasRouteImport.update({
   path: '/reservas',
   getParentRoute: () => SlugAdminRoute,
 } as any)
+const SlugAdminQrCodesRoute = SlugAdminQrCodesRouteImport.update({
+  id: '/qr-codes',
+  path: '/qr-codes',
+  getParentRoute: () => SlugAdminRoute,
+} as any)
 const SlugAdminModeracaoRoute = SlugAdminModeracaoRouteImport.update({
   id: '/moderacao',
   path: '/moderacao',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
+  '/$slug/admin/qr-codes': typeof SlugAdminQrCodesRoute
   '/$slug/admin/reservas': typeof SlugAdminReservasRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin/': typeof SlugAdminIndexRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
+  '/$slug/admin/qr-codes': typeof SlugAdminQrCodesRoute
   '/$slug/admin/reservas': typeof SlugAdminReservasRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin': typeof SlugAdminIndexRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/$slug/admin/curriculos': typeof SlugAdminCurriculosRoute
   '/$slug/admin/login': typeof SlugAdminLoginRoute
   '/$slug/admin/moderacao': typeof SlugAdminModeracaoRoute
+  '/$slug/admin/qr-codes': typeof SlugAdminQrCodesRoute
   '/$slug/admin/reservas': typeof SlugAdminReservasRoute
   '/$slug/foto/$photoId': typeof SlugFotoPhotoIdRoute
   '/$slug/admin/': typeof SlugAdminIndexRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
+    | '/$slug/admin/qr-codes'
     | '/$slug/admin/reservas'
     | '/$slug/foto/$photoId'
     | '/$slug/admin/'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
+    | '/$slug/admin/qr-codes'
     | '/$slug/admin/reservas'
     | '/$slug/foto/$photoId'
     | '/$slug/admin'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/$slug/admin/curriculos'
     | '/$slug/admin/login'
     | '/$slug/admin/moderacao'
+    | '/$slug/admin/qr-codes'
     | '/$slug/admin/reservas'
     | '/$slug/foto/$photoId'
     | '/$slug/admin/'
@@ -337,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugAdminReservasRouteImport
       parentRoute: typeof SlugAdminRoute
     }
+    '/$slug/admin/qr-codes': {
+      id: '/$slug/admin/qr-codes'
+      path: '/qr-codes'
+      fullPath: '/$slug/admin/qr-codes'
+      preLoaderRoute: typeof SlugAdminQrCodesRouteImport
+      parentRoute: typeof SlugAdminRoute
+    }
     '/$slug/admin/moderacao': {
       id: '/$slug/admin/moderacao'
       path: '/moderacao'
@@ -381,6 +400,7 @@ interface SlugAdminRouteChildren {
   SlugAdminCurriculosRoute: typeof SlugAdminCurriculosRoute
   SlugAdminLoginRoute: typeof SlugAdminLoginRoute
   SlugAdminModeracaoRoute: typeof SlugAdminModeracaoRoute
+  SlugAdminQrCodesRoute: typeof SlugAdminQrCodesRoute
   SlugAdminReservasRoute: typeof SlugAdminReservasRoute
   SlugAdminIndexRoute: typeof SlugAdminIndexRoute
 }
@@ -391,6 +411,7 @@ const SlugAdminRouteChildren: SlugAdminRouteChildren = {
   SlugAdminCurriculosRoute: SlugAdminCurriculosRoute,
   SlugAdminLoginRoute: SlugAdminLoginRoute,
   SlugAdminModeracaoRoute: SlugAdminModeracaoRoute,
+  SlugAdminQrCodesRoute: SlugAdminQrCodesRoute,
   SlugAdminReservasRoute: SlugAdminReservasRoute,
   SlugAdminIndexRoute: SlugAdminIndexRoute,
 }
