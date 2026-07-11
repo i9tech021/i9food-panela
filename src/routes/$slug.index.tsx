@@ -79,10 +79,7 @@ function HomePage() {
   };
   const search = useSearch({ from: "/$slug/" });
   const { open, openDrawer, closeDrawer } = useDrawer();
-  const [mounted, setMounted] = useState(false);
   const [showMenu, setShowMenu] = useState(true);
-
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -160,8 +157,8 @@ function HomePage() {
         {/* Chip editorial — apenas desktop */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 12 }}
-          transition={{ duration: 0.55, ease: "easeOut", delay: 0.15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
           className="absolute inset-x-0 bottom-16 hidden justify-center px-6 sm:flex"
         >
           <div className="inline-flex items-center gap-2 rounded-full bg-black/60 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.32em] text-white/90 ring-1 ring-white/15 backdrop-blur-md">
@@ -192,8 +189,8 @@ function HomePage() {
         />
         <motion.header
           initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 8 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
           className="mb-6"
         >
           <div className="type-label text-[color:var(--copper)]">Hub Principal</div>
@@ -209,10 +206,10 @@ function HomePage() {
         {/* Action grid */}
         <motion.div
           initial="hidden"
-          animate={mounted ? "visible" : "hidden"}
+          animate="visible"
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.045, delayChildren: 0.05 } },
+            visible: { transition: { staggerChildren: 0.035, delayChildren: 0.02 } },
           }}
           className="grid auto-rows-fr grid-cols-2 gap-3"
         >
