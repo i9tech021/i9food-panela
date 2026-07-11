@@ -112,6 +112,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         crossOrigin: "anonymous",
       },
       {
+        rel: "preconnect",
+        href: "https://nqdaxllqjnxwxmglbghl.supabase.co",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "dns-prefetch",
+        href: "https://nqdaxllqjnxwxmglbghl.supabase.co",
+      },
+      {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fira+Sans:wght@400;500;600;700&display=swap",
       },
