@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { z } from "zod";
 
 import { getRestaurantBySlug, listLinks, trackEvent } from "@/lib/hub/api";
+import { RESTAURANT_CONFIG } from "@/config/restaurant.config";
 import type { HubAction, Restaurant } from "@/lib/hub/types";
 import { NotFoundRestaurant } from "@/components/hub/NotFoundRestaurant";
 import { ActionCard } from "@/components/hub/ActionCard";
@@ -31,12 +32,23 @@ export const Route = createFileRoute("/$slug/")({
     }
   },
   loader: async ({ params }) => {
+    // Slug conhecido → paraleliza as duas queries usando o id fixo do config.
+    // Slug diferente → fallback serial só nesse caso raro.
+    if (params.slug === RESTAURANT_CONFIG.slug) {
+      const [restaurant, actions] = await Promise.all([
+        getRestaurantBySlug(params.slug),
+        listLinks(RESTAURANT_CONFIG.id) as Promise<HubAction[]>,
+      ]);
+      return { restaurant: restaurant as Restaurant | null, actions };
+    }
     const restaurant = await getRestaurantBySlug(params.slug);
     if (!restaurant)
       return { restaurant: null as Restaurant | null, actions: [] as HubAction[] };
     const actions = (await listLinks(restaurant.id)) as HubAction[];
     return { restaurant: restaurant as Restaurant | null, actions };
   },
+  staleTime: 60_000,
+  gcTime: 5 * 60_000,
   head: ({ loaderData }) => {
     const name = loaderData?.restaurant?.name ?? "Panela da Roça";
     const desc =
