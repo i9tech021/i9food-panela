@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { z } from "zod";
-import { ArrowLeft, ArrowRight, Camera, ChevronLeft, ChevronRight, ImagePlus, Loader2, Plus, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, CheckCircle2, ChevronLeft, ChevronRight, ImagePlus, Loader2, Plus, X } from "lucide-react";
 
 import {
   createPhoto,
@@ -71,6 +71,7 @@ function EnviarPage() {
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number>(UPLOAD_DAILY_LIMIT);
+  const [justSent, setJustSent] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const addMoreRef = useRef<HTMLInputElement>(null);
 
@@ -130,10 +131,12 @@ function EnviarPage() {
         setProgress({ done: i + 1, total });
       }
       setRemaining(getUploadsRemaining());
+      const sentCount = total;
       setFiles([]);
       setCaption("");
       setProgress(null);
       setState("idle");
+      setJustSent(sentCount);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Falha ao publicar.");
       setState("idle");
@@ -358,6 +361,76 @@ function EnviarPage() {
           </p>
         )}
       </motion.form>
+
+      {/* Modal de confirmação pós-envio */}
+      {justSent !== null && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-6 pt-16 backdrop-blur-sm sm:items-center sm:pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            className="relative w-full max-w-sm rounded-3xl bg-background p-6 shadow-2xl"
+          >
+            <button
+              type="button"
+              onClick={() => setJustSent(null)}
+              aria-label="Fechar"
+              className="absolute right-3 top-3 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-primary"
+            >
+              <X className="size-4" />
+            </button>
+            <div className="flex flex-col items-center text-center">
+              <div className="grid size-16 place-items-center rounded-full bg-[color:var(--whatsapp)]/12 text-[color:var(--whatsapp)] ring-8 ring-[color:var(--whatsapp)]/6">
+                <CheckCircle2 className="size-8" strokeWidth={1.75} />
+              </div>
+              <div className="mt-5 text-[10px] font-bold uppercase tracking-[0.22em] text-[color:var(--copper)]">
+                Momento recebido
+              </div>
+              <h2 className="mt-2 font-display text-2xl leading-tight text-primary text-balance">
+                {justSent > 1
+                  ? `Suas ${justSent} fotos entraram na galeria!`
+                  : "Sua foto entrou na galeria!"}
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground text-balance">
+                Obrigado por compartilhar o seu momento no Panela.
+              </p>
+
+              <div className="mt-6 flex w-full flex-col gap-2.5">
+                <Link
+                  to="/$slug/galeria"
+                  params={{ slug: restaurant.slug }}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[color:var(--copper)] px-5 py-3.5 text-sm font-semibold text-[color:var(--cream)] shadow-[0_18px_40px_-18px_color-mix(in_oklab,var(--copper)_65%,transparent)] transition-transform hover:-translate-y-0.5"
+                >
+                  Ver Momentos Panela
+                  <ArrowRight className="size-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setJustSent(null);
+                    setTimeout(() => inputRef.current?.click(), 50);
+                  }}
+                  disabled={remaining === 0}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[color:var(--copper)]/25 bg-transparent px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-[color:var(--copper)]/5 disabled:opacity-50"
+                >
+                  <Plus className="size-4" />
+                  Adicionar mais fotos
+                </button>
+              </div>
+
+              {remaining > 0 ? (
+                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--sage)]">
+                  Restam {remaining} {remaining === 1 ? "foto" : "fotos"} hoje
+                </p>
+              ) : (
+                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--sage)]">
+                  Limite diário atingido · volte amanhã 🌱
+                </p>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Galeria ao vivo abaixo do formulário */}
       <section className="mx-auto max-w-3xl px-6 pt-16">
