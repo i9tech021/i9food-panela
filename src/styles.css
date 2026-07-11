@@ -262,3 +262,16 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Ocultar badge "Edit with Lovable" no site publicado */
+a[href*="lovable.dev"][href*="?utm"],
+a[href*="lovable.dev/projects"],
+a[href*="lovable.app"][target="_blank"][class*="badge"],
+#lovable-badge,
+[data-lovable-badge],
+iframe[src*="lovable.dev/badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
