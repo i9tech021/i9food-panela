@@ -174,7 +174,7 @@ function EnviarPage() {
             Momentos no Panela
           </div>
           <h1 className="font-display text-[2.6rem] leading-[1.02] text-primary text-balance">
-            Compartilhe o seu <span className="text-[color:var(--copper)]">tempero</span>.
+            Compartilhe a sua <span className="text-[color:var(--copper)]">experiência</span>.
           </h1>
           <p className="max-w-[300px] text-sm leading-relaxed text-muted-foreground">
             Sua foto entra na galeria da casa na hora, junto com a dos outros clientes.
@@ -184,7 +184,7 @@ function EnviarPage() {
         {/* Dropzone / Carousel de previews */}
         {previews.length === 0 ? (
           <label
-            className="group relative flex aspect-[4/5] w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-[color:var(--sage)]/30 bg-[color:var(--sage)]/5 text-center transition-all hover:border-[color:var(--copper)]/60 hover:bg-[color:var(--copper)]/[0.04] active:scale-[0.995]"
+            className="group relative flex aspect-[16/10] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-[color:var(--sage)]/30 bg-[color:var(--sage)]/5 text-center transition-all hover:border-[color:var(--copper)]/60 hover:bg-[color:var(--copper)]/[0.04] active:scale-[0.995] sm:aspect-[2/1]"
           >
             <input
               ref={inputRef}
@@ -197,11 +197,11 @@ function EnviarPage() {
                 e.currentTarget.value = "";
               }}
             />
-            <span className="grid size-16 place-items-center rounded-full bg-background text-[color:var(--copper)] shadow-[var(--shadow-soft)] transition-transform group-hover:-translate-y-1">
-              <ImagePlus className="size-7" strokeWidth={1.6} />
+            <span className="grid size-12 place-items-center rounded-full bg-background text-[color:var(--copper)] shadow-[var(--shadow-soft)] transition-transform group-hover:-translate-y-1">
+              <ImagePlus className="size-5" strokeWidth={1.6} />
             </span>
-            <div className="space-y-1.5">
-              <div className="font-display text-xl text-primary">Adicionar fotos</div>
+            <div className="space-y-1">
+              <div className="font-display text-lg text-primary">Adicionar fotos</div>
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
                 Da galeria · ou tire na hora
               </div>
