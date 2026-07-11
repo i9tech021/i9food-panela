@@ -8,6 +8,7 @@ import {
   Briefcase,
   CalendarCheck,
   LogOut,
+  QrCode,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,7 +22,8 @@ type AdminRoute =
   | "/$slug/admin/curriculos"
   | "/$slug/admin/reservas"
   | "/$slug/admin/conteudo"
-  | "/$slug/admin/config";
+  | "/$slug/admin/config"
+  | "/$slug/admin/qr-codes";
 
 const NAV: { label: string; to: AdminRoute; icon: LucideIcon; keyMatch: string }[] = [
   { label: "Visão geral", to: "/$slug/admin", icon: LayoutDashboard, keyMatch: "admin-home" },
@@ -29,6 +31,7 @@ const NAV: { label: string; to: AdminRoute; icon: LucideIcon; keyMatch: string }
   { label: "Currículos", to: "/$slug/admin/curriculos", icon: Briefcase, keyMatch: "/curriculos" },
   { label: "Reservas", to: "/$slug/admin/reservas", icon: CalendarCheck, keyMatch: "/reservas" },
   { label: "Conteúdo", to: "/$slug/admin/conteudo", icon: Sparkles, keyMatch: "/conteudo" },
+  { label: "QR & Links", to: "/$slug/admin/qr-codes", icon: QrCode, keyMatch: "/qr-codes" },
   { label: "Configurações", to: "/$slug/admin/config", icon: Settings, keyMatch: "/config" },
 ];
 
